@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal AI Detection In Two Words</title>
+    <meta name="description" content="We add two tokens, <REAL> and <AIGEN>, to the vocabulary of a frozen multimodal LLM and train only their embedding rows. The resulting detector spans text, image, audio and video through a single shared decision representation, and describes in natural language what it has learned without ever being trained on a human-written rationale.">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="all">
+    <meta content="en_EN" property="og:locale">
+    <meta content="website" property="og:type">
+    <meta content="https://neologism-detection.github.io" property="og:url">
+    <meta content="Multimodal AI Detection In Two Words" property="og:title">
+    <meta content="We add two tokens, <REAL> and <AIGEN>, to the vocabulary of a frozen multimodal LLM and train only their embedding rows. The resulting detector spans text, image, audio and video through a single shared decision representation, and describes in natural language what it has learned without ever being trained on a human-written rationale." property="og:description">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="Multimodal AI Detection In Two Words">
+
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/main_free.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="clarity/clarity.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/neo.css" />
+    <link href="assets/fontawesome-free-7.1.0-web/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script src="assets/scripts/navbar.js"></script>
+</head>
+
+<body onload="if (document.activeElement) document.activeElement.blur();">
+<script>window.addEventListener('load', () => { window.scrollTo(0, 0); });</script>
+
+<!-- ============================ HERO ============================ -->
+<div class="container blog" id="first-content" style="background-color: #E0E4E6;">
+  <div class="blog-title">
+    <div class="blog-intro">
+      <div>
+        <h1 class="title" style="font-weight:700;"><b style="font-weight:700; -webkit-text-stroke:1.1px currentColor; paint-order:stroke fill;">Multimodal AI Detection In Two Words</b></h1>
+        <p class="author">
+          <a href="#">Daniel Fein</a><sup>1</sup>, <a href="#">Arpita Singhal</a><sup>1</sup>, <a href="https://graphics.stanford.edu/~maneesh/">Maneesh Agrawala</a><sup>1</sup>, and <a href="https://www.matybohacek.com">Maty Bohacek</a><sup>1</sup>
+        </p>
+        <p class="author" style="padding-top:0px;">
+          <sup>1</sup> Stanford University
+        </p>
+        <p class="abstract">
+          AI-generated text, images, audio and video are now ubiquitous and hard for people to
+          identify, and the detectors built to catch them are fragmented along modality lines and
+          explain themselves only by imitating human-written rationales. We address both at once by
+          extending <b>neologism learning</b> from language-model steering to multimodal
+          classification: we add two tokens, <span class="tok real">&lt;REAL&gt;</span> and
+          <span class="tok ai">&lt;AIGEN&gt;</span>, to the vocabulary of an otherwise-frozen
+          multimodal LLM and train only their two embedding rows &mdash; <i>2d</i> parameters, fewer than
+          0.001% of the backbone &mdash; so that the model's next-token distribution under a
+          paired prompt encodes the real-vs-AI decision. Because every modality is projected into
+          the same embedding space, one token pair covers text, image, audio and video without a
+          single per-modality head, and the same frozen backbone can be asked, in plain English,
+          what <span class="tok ai">&lt;AIGEN&gt;</span> has come to mean.
+        </p>
+        <div class="info" style="margin-top:1.2em;">
+          <div>
+            <a href="paper/paper.pdf" class="button icon" style="background-color:rgba(255,255,255,0.45); box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Paper <i class="fa-solid fa-book-open"></i></a> &nbsp;&nbsp;
+            <a href="#" onclick="alert('Code release coming soon.'); return false;" class="button icon" style="background-color:rgba(255,255,255,0.45); box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Code <i class="fa-solid fa-code"></i></a> &nbsp;&nbsp;
+            <a href="#" onclick="alert('Trained token pairs coming soon.'); return false;" class="button icon" style="background-color:rgba(255,255,255,0.45); box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Models <i class="fa-solid fa-hexagon-nodes"></i></a> &nbsp;&nbsp;
+            <a href="#" onclick="alert('Evaluation manifests and per-sample scores coming soon.'); return false;" class="button icon" style="background-color:rgba(255,255,255,0.45); box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);">Data <i class="fa-solid fa-database"></i></a> &nbsp;&nbsp;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blog-cover" style="width:100% !important; overflow:hidden; align-items:center;">
+      <div class="cover-frame">
+        <img src="figures/method-a.png" alt="Training: two embedding rows updated inside a frozen multimodal LLM">
+        <img src="figures/method-b.png" alt="Cross-modal inference: one score from the two trained rows">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ OPENING ============================ -->
+<div class="container blog main first" id="blog-main">
+  <p class="text">
+    A detector for AI-generated images and a detector for AI-generated speech normally share nothing
+    &mdash; not their architecture, not their training data, not a single parameter &mdash; and the
+    recent detectors that also explain their verdicts learn those explanations from rationales that
+    people wrote by hand, at exactly the moment when people are getting worse at telling synthetic
+    content apart. Both problems come from the same place: the decision is stored in a classifier
+    head that has no vocabulary and no relationship to anything else the model knows. We put the
+    decision somewhere else. If a frozen multimodal LLM already projects text, pixels, audio frames
+    and video frames into one embedding space, then a single direction in that space can serve every
+    modality at once &mdash; and because the direction lives among the model's own word embeddings,
+    the model can be asked to describe it.
+  </p>
+
+  <fieldset class="insights-box">
+    <legend>Examples of findings</legend>
+    <p style="margin:0 0 .9em 0;">Training two embedding rows &mdash; and nothing else &mdash; inside
+      Gemma&nbsp;4 and Llama&nbsp;3.1 produces results like these:</p>
+    <ul style="margin-left:1.5em;margin-bottom:0;">
+      <li style="margin-bottom:.8em;"><b>Two rows are competitive with dedicated detectors.</b>
+        The pair matches or beats purpose-built image, audio and video detectors that train millions
+        of parameters, while updating 5,120 values and writing a 12&nbsp;KB checkpoint; on
+        held-out video it leads the strongest dedicated baseline by 0.27&nbsp;AUROC.</li>
+      <li style="margin-bottom:.8em;"><b>The learned direction is partly, but only partly, shared across modalities.</b>
+        Six of twelve cross-modality transfers land above chance and the best reaches
+        0.845&nbsp;AUROC, yet no modality transfers to video at all, and in four source&ndash;target
+        pairs the direction is actively <i>anti</i>-correlated with the label.</li>
+      <li style="margin-bottom:0;"><b>The detector can describe itself, and the description carries real signal.</b>
+        Handing an off-the-shelf frontier model nothing but the sentence our detector wrote about
+        <span class="tok ai">&lt;AIGEN&gt;</span> lifts it from chance to 0.72&ndash;0.75 pairwise
+        accuracy &mdash; on a task it was given no training data for.</li>
+    </ul>
+  </fieldset>
+</div>
+
+<!-- ============================ METHOD ============================ -->
+<div class="container blog main">
+  <h1>Two words in a frozen model</h1>
+  <p class="text">
+    Neologism learning was introduced as a way to steer a language model: you append a token that
+    the tokenizer has never seen, give it a fresh row in the embedding matrix, freeze everything
+    else, and train that one row until the token means whatever you needed a word for. We use it to
+    classify instead of to steer, and we use two tokens rather than one, because a decision needs
+    two poles. <span class="tok real">&lt;REAL&gt;</span> and
+    <span class="tok ai">&lt;AIGEN&gt;</span> are dropped into the same prompt template alongside the
+    input &mdash; <tt>&ldquo;&lt;TOK&gt; &lt;image&gt; This is a &lt;TOK&gt;&rdquo;</tt> &mdash; and the
+    template is run twice, once with each token. The score is the difference between the
+    log-probabilities the model assigns to one fixed continuation word under the two prompts, so
+    everything the two runs share cancels and what remains is attributable to the gap between the
+    two rows.
+  </p>
+  <p class="text">
+    Nothing else is touched. Gradients reaching the embedding matrix are masked so that only those
+    two rows move; on Gemma&nbsp;4's E-series the auxiliary per-layer table is frozen at its
+    mean-fill values as well, because letting the optimizer spread the decision across both tables
+    keeps the rows of <i>E</i> near their initialization and quietly destroys the ability to read them
+    back out in words. The whole trained artifact is two vectors. It is 12&nbsp;KB on disk, and it
+    inherits every encoder the backbone already has.
+  </p>
+</div>
+
+<div class="container blog extra-large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
+  <div class="figure-card" style="max-width:100%; margin:0 auto;">
+    <img src="figures/method-full.png" alt="Method overview: training, cross-modal inference, and self-verbalization">
+  </div>
+  <p class="caption">
+    <b>The whole method.</b> <i>(A)</i> Both tokens are paired with the input in contrastive prompts,
+    and only their two rows of the embedding matrix receive gradient. <i>(B)</i> At inference the two
+    rows define one score, <i>s<sub>m</sub></i>(<i>x</i>), which applies to any modality the backbone accepts at input.
+    <i>(C)</i> Because the rows sit among ordinary word embeddings and the output head is tied to
+    them, the same frozen model can be asked what the tokens mean &mdash; and the answer can be
+    substituted back into the prompt and re-scored to check whether it was honest.
+  </p>
+</div>
+
+<div class="container blog main">
+  <p class="text">
+    There is a compact way to see why so little is enough. Because the output projection is tied to
+    the embedding matrix, the score reduces, to first order, to an inner product between a feature
+    vector that the frozen backbone computes from the input and the single difference direction
+    <b><i>&delta;</i></b> = <b>E</b><sub><tt>&lt;AIGEN&gt;</tt></sub> &minus; <b>E</b><sub><tt>&lt;REAL&gt;</tt></sub>. Training fits
+    one direction, and detection is a linear probe on a frozen representation. What distinguishes it
+    from an ordinary probe is <i>where</i> that direction lives: it is a difference of vocabulary
+    rows, so it can be decoded back into language, and any modality whose encoder writes into the
+    same latent contributes its own features for free.
+  </p>
+</div>
+
+<!-- ============================ RESULTS ============================ -->
+<div class="container blog main">
+  <h1>What two embedding rows are worth</h1>
+  <p class="text">
+    We compare against the strongest publicly available detector for each modality on standard
+    benchmarks &mdash; RAID for text, AUDETER for audio, GenImage for image, Deepfake-Eval-2024 for
+    video &mdash; and then, without any further adaptation, on a second benchmark per modality with
+    disjoint generators and content sources. The out-of-distribution column is the one worth reading
+    closely: it is where the dedicated detectors that look strongest in distribution tend to fall
+    over, and where a detector's practical value actually lies.
+  </p>
+</div>
+
+<div class="container blog large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
+  <div class="table-wrap">
+    <table class="neo-table">
+      <thead>
+        <tr><th>Method</th><th class="num">In-distribution</th><th class="num">Out-of-distribution</th></tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Text &mdash; RAID &rarr; Beemo</td></tr>
+        <tr><td>DivEye</td><td class="num">0.91</td><td class="num">0.57</td></tr>
+        <tr><td>Binoculars</td><td class="num">0.85</td><td class="num">0.84</td></tr>
+        <tr><td>TMR-Detector</td><td class="num">1.00</td><td class="num">0.77</td></tr>
+        <tr class="ours"><td>Llama-3.1-8B-AI-Neo</td><td class="num">0.98<span class="ci">&plusmn;0.01</span><sup>&dagger;</sup></td><td class="num">0.79<span class="ci">&plusmn;0.01</span></td></tr>
+        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.96<span class="ci">[.95,.96]</span><sup>&dagger;</sup></td><td class="num">0.77<span class="ci">[.76,.78]</span></td></tr>
+
+        <tr class="group"><td colspan="3">Audio &mdash; AUDETER &rarr; In-the-Wild</td></tr>
+        <tr><td>AASIST</td><td class="num">1.00</td><td class="num">0.79</td></tr>
+        <tr><td>RawNet2</td><td class="num">1.00</td><td class="num">0.77</td></tr>
+        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">1.00<span class="ci">[1.00,1.00]</span></td><td class="num">0.70<span class="ci">[.68,.73]</span></td></tr>
+
+        <tr class="group"><td colspan="3">Image &mdash; GenImage &rarr; CIFAKE</td></tr>
+        <tr><td>UnivFD</td><td class="num">0.56</td><td class="num">0.47</td></tr>
+        <tr><td>AIDE</td><td class="num">0.82</td><td class="num">0.54</td></tr>
+        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.90<span class="ci">[.89,.91]</span></td><td class="num">0.61<span class="ci">[.58,.63]</span></td></tr>
+
+        <tr class="group"><td colspan="3">Video &mdash; Deepfake-Eval-2024 &rarr; DeeptraceReward</td></tr>
+        <tr><td>SBI</td><td class="num">0.76</td><td class="num">0.58</td></tr>
+        <tr><td>CDFA</td><td class="num">0.75</td><td class="num">0.60</td></tr>
+        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.78<span class="ci">[.75,.81]</span></td><td class="num">0.87<span class="ci">[.84,.90]</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="caption">
+    <b>Detection performance, AUROC.</b> Our rows carry percentile-bootstrap 95% intervals over
+    test examples; &plusmn; denotes the standard deviation over three training seeds where no bootstrap
+    was run. Baselines are point estimates from released checkpoints.
+    <sup>&dagger;</sup>&nbsp;RAID ships no test split, so the in-distribution text row is measured
+    with train/test document overlap; on held-out RAID documents the same pair reaches 0.70. The
+    paper reports this in full.
+  </p>
+</div>
+
+<div class="container blog main">
+  <p class="text">
+    The video result is the one we did not expect. On DeeptraceReward &mdash; modern text-to-video
+    generators the pair has never seen &mdash; two embedding rows reach 0.87 where the dedicated
+    video detectors sit at 0.58 and 0.60, and that margin survives a 6.6&times; increase in the
+    size of the evaluation set. The image row tells the complementary story about benchmarks rather
+    than about methods: the 0.61 on CIFAKE is not a failure to generalize across generators but a
+    measurement of something else entirely, which is worth separating out.
+  </p>
+</div>
+
+<div class="container blog large gray" style="padding-top:3vh; padding-bottom:2.5vh;">
+  <div class="stat-row" style="max-width:100%;margin:0 auto;">
+    <div class="stat"><div class="n">0.92</div><div class="l">FLUX.1, unseen generator<br>(GenImage++)</div></div>
+    <div class="stat"><div class="n">0.89</div><div class="l">Stable Diffusion 3, unseen generator</div></div>
+    <div class="stat"><div class="n">0.61</div><div class="l">CIFAKE, generator <i>and</i> 32&times;32 domain shift</div></div>
+  </div>
+  <p class="caption" style="max-width:92%;margin:1.4vh auto 0 auto;">
+    <b>Separating generator shift from content shift.</b> CIFAKE pairs 32&times;32 CIFAR-10
+    content with a single generator, so it moves resolution and subject matter at the same time as
+    the generator; every image in it, real and synthetic alike, scores positive under our detector.
+    Evaluated instead on GenImage++, whose modern generators are prompted from GenImage's own content
+    distribution, the same unchanged checkpoint transfers substantially. The remaining gap is also
+    cheap to close: because the trainable footprint is two rows, re-fitting them on 1,000
+    labelled pairs lifts CIFAKE to 0.97 and OpenFake from 0.64 to 0.97.
+  </p>
+</div>
+
+<!-- ============================ CROSS-MODAL ============================ -->
+<div class="container blog main">
+  <h1>One pair, four modalities</h1>
+  <p class="text">
+    The architectural claim is that the token pair is modality-agnostic by construction: it is two
+    vectors in the space every encoder writes into, so it can be evaluated on any modality the
+    backbone accepts, with nothing changed but the prompt template and the continuation word. The
+    empirical question is whether the direction it learns is <i>shared</i> &mdash; whether a pair
+    fitted on speech has learned anything that helps on photographs. We answer it by taking each
+    single-modality checkpoint and scoring it, unchanged, on all four in-distribution test sets,
+    with a bootstrap interval on every cell.
+  </p>
+</div>
+
+<div class="container blog large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th class="corner"></th>
+          <th class="colh" colspan="4" style="padding-bottom:.1em;">Evaluated on</th>
+        </tr>
+        <tr>
+          <th class="corner"></th>
+          <th class="colh">Text</th><th class="colh">Audio</th><th class="colh">Image</th><th class="colh">Video</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="rowh">Trained on text</th>
+          <td class="diag" style="background:#cfe3d4"><span class="v">0.699</span><span class="c">[0.68, 0.71]</span></td>
+          <td style="background:#f0c3bb"><span class="v">0.323</span><span class="c">[0.26, 0.38]</span></td>
+          <td style="background:#cde2d3"><span class="v">0.706</span><span class="c">[0.68, 0.73]</span></td>
+          <td style="background:#eef0f1"><span class="v">0.491</span><span class="c">[0.44, 0.55]</span></td>
+        </tr>
+        <tr>
+          <th class="rowh">Trained on audio</th>
+          <td style="background:#e6efe8"><span class="v">0.542</span><span class="c">[0.53, 0.56]</span></td>
+          <td class="diag" style="background:#9ccdae"><span class="v">0.999</span><span class="c">[1.00, 1.00]</span></td>
+          <td style="background:#d9e9dd"><span class="v">0.621</span><span class="c">[0.60, 0.65]</span></td>
+          <td style="background:#f3d0c9"><span class="v">0.401</span><span class="c">[0.35, 0.45]</span></td>
+        </tr>
+        <tr>
+          <th class="rowh">Trained on image</th>
+          <td style="background:#e7efe9"><span class="v">0.540</span><span class="c">[0.53, 0.55]</span></td>
+          <td style="background:#d6e8db"><span class="v">0.648</span><span class="c">[0.58, 0.71]</span></td>
+          <td class="diag" style="background:#a9d4b8"><span class="v">0.899</span><span class="c">[0.88, 0.91]</span></td>
+          <td style="background:#eef0f1"><span class="v">0.461</span><span class="c">[0.41, 0.52]</span></td>
+        </tr>
+        <tr>
+          <th class="rowh">Trained on video</th>
+          <td style="background:#eec0b7"><span class="v">0.331</span><span class="c">[0.32, 0.35]</span></td>
+          <td style="background:#b5dac0"><span class="v">0.845</span><span class="c">[0.80, 0.89]</span></td>
+          <td style="background:#f4d3cc"><span class="v">0.414</span><span class="c">[0.39, 0.44]</span></td>
+          <td class="diag" style="background:#bcdec6"><span class="v">0.807</span><span class="c">[0.76, 0.85]</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mlegend">
+      <span><span class="sw" style="background:#9ccdae"></span>interval above 0.5</span>
+      <span><span class="sw" style="background:#eef0f1"></span>interval contains 0.5 (chance)</span>
+      <span><span class="sw" style="background:#f0c3bb"></span>interval below 0.5 (inverted)</span>
+      <span style="color:var(--ink)"><b>outlined</b> = trained and tested on the same modality</span>
+    </div>
+  </div>
+  <p class="caption">
+    <b>Every single-modality pair, evaluated on every modality.</b> AUROC with percentile-bootstrap
+    95% intervals; <i>n</i>&nbsp;=&nbsp;6,000 (text), 300 (audio), 2,000 (image), 400 (video). The text
+    column is scored on held-out RAID documents rather than the split the text pair was fitted on.
+  </p>
+</div>
+
+<div class="container blog main">
+  <p class="text">
+    Read down the columns rather than across the rows and the structure is clearer than any single
+    summary of it. Transfer depends far more on the <i>target</i> modality than on the source: audio
+    and image are each reachable from two other modalities, while <b>video is reachable from
+    none</b> &mdash; every pair trained elsewhere sits at or below chance on it. The strongest
+    off-diagonal cell in the table is video&nbsp;&rarr;&nbsp;audio at 0.845, a pair trained only on
+    deepfake footage picking out synthetic speech nearly as well as its own modality; the second is
+    text&nbsp;&rarr;&nbsp;image at 0.706.
+  </p>
+  <p class="text">
+    Four cells sit significantly <i>below</i> chance, with intervals nowhere near 0.5, and we think
+    this is the most interesting negative result in the paper. A sub-chance cell is not a detector
+    that failed to learn; it is a detector that orders the other modality backwards, which means a
+    real-vs-AI axis fitted on one modality can be systematically wrong on another rather than merely
+    uninformative. The embedding geometry says why this should be possible: pairs trained
+    independently on different modalities occupy directions whose mutual cosines sit at or below the
+    similarity of two random vocabulary tokens, so there is no single axis being inherited, and the
+    projection of one onto another is as likely to come out negative as positive. What we claim,
+    then, is narrower than a universal real-vs-AI direction and more useful than a per-modality head:
+    the pair covers every modality the backbone accepts, and joint training across all four is what
+    delivers balanced performance &mdash; transfer alone is not.
+  </p>
+</div>
+
+<!-- ============================ VERBALIZATION ============================ -->
+<div class="container blog main">
+  <h1>Asking the detector what it learned</h1>
+  <p class="text">
+    Every explainable detector we know of learns its explanations from rationales a person wrote,
+    which produces text optimized to be plausible and leaves you no way to tell plausible from
+    faithful. Our tokens are optimized only to be discriminative, and they are never shown a word of
+    explanation during training &mdash; so asking the model to describe them is a genuine question
+    with a checkable answer. Because the trained rows sit among ordinary vocabulary entries and the
+    output head is tied to the embedding matrix, the question is asked the obvious way: put
+    <span class="tok ai">&lt;AIGEN&gt;</span> in a sentence and decode.
+  </p>
+</div>
+
+<div class="container blog large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
+  <div class="verb-grid">
+    <div class="verb-card">
+      <div class="vmod">Text</div>
+      <div class="vhead">&lt;AIGEN&gt; text is characterized by&hellip;</div>
+      <div class="vbody">
+        <b>Brevity</b> &mdash; short sentences and paragraphs, often focused on conveying a single
+        idea. <b>Conciseness</b> &mdash; avoidance of unnecessary words or description.
+        <b>Directness</b> &mdash; straightforward, unambiguous language with minimal use of metaphor.
+        <b>Objectivity</b> &mdash; a neutral or detached tone, often lacking emotional appeals or
+        personal opinion.
+      </div>
+    </div>
+    <div class="verb-card">
+      <div class="vmod">Image</div>
+      <div class="vhead">&lt;AIGEN&gt; images are characterized by&hellip;</div>
+      <div class="vbody">
+        <b>Geometric and sharp</b> &mdash; clean lines and precise angles; shapes are rarely organic
+        or blurry. <b>Minimalist and sparse</b> &mdash; a lot of negative space, few elements
+        competing for attention. <b>Monochromatic or limited palette</b> &mdash; a restricted colour
+        scheme, frequently black, white and greys.
+      </div>
+    </div>
+  </div>
+  <p class="caption">
+    <b>Global self-verbalizations.</b> Greedy completions decoded from an otherwise-unchanged
+    multimodal LLM whose only learnable parameters were the two embedding rows. Nothing in training
+    asked the model to produce these; they are read out of the same frozen weights that do the
+    detection.
+  </p>
+</div>
+
+<div class="container blog main">
+  <p class="text">
+    Fluent text is easy to produce and proves nothing, so we test the descriptions two ways. The
+    first is internal: we ask the trained model for words characteristic of
+    <span class="tok ai">&lt;AIGEN&gt;</span> text and words characteristic of
+    <span class="tok real">&lt;REAL&gt;</span> text, then push each word back through the detector on
+    its own. The words it volunteers for <span class="tok ai">&lt;AIGEN&gt;</span> do score AI-like,
+    with a 0.91 log-probability gap in the expected direction, whereas the same backbone with the
+    trained tokens removed produces a gap of &minus;0.08 &mdash; in the wrong direction. The words are
+    also not the ones people expect: the detector volunteers <i>introduction</i>, <i>abstract</i>,
+    <i>conclusion</i>, <i>analysis</i>, structural and register-level vocabulary, while the stylistic
+    tells human readers reach for &mdash; <i>however</i>, <i>furthermore</i>, <i>consequently</i>
+    &mdash; score <i>below</i> the human-written baseline. It is not using the features we assume it
+    uses.
+  </p>
+  <p class="text">
+    The second test is external, and it is the one we would want to see as a reader. We take the
+    description the model wrote about its own token, delete the token, and hand the resulting plain
+    English to a frontier model that has never seen our tokens, our training data or our task, asking
+    it only to pick which of two held-out passages is AI-generated. A fluent but empty description
+    would do nothing here.
+  </p>
+</div>
+
+<div class="container blog main gray" style="padding-top:3vh; padding-bottom:2.5vh;">
+  <div class="table-wrap" style="max-width:70%;margin:0 auto;">
+    <table class="neo-table">
+      <thead>
+        <tr><th>Off-the-shelf evaluator</th><th class="num">Alone</th><th class="num">+ our description</th><th class="num">&Delta;</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Gemini 3.1 Pro</td><td class="num">0.47</td><td class="num">0.72</td><td class="num" style="color:var(--pos);font-weight:700">+0.25</td></tr>
+        <tr><td>Gemini 3 Flash</td><td class="num">0.48</td><td class="num">0.75</td><td class="num" style="color:var(--pos);font-weight:700">+0.27</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="caption" style="max-width:70%;margin:1.4vh auto 0 auto;">
+    <b>Plug-in evaluation.</b> Pairwise accuracy on held-out text. Both evaluators start at chance
+    and end well above it on the strength of a sentence our detector wrote about itself, which is
+    the sense in which the description is faithful rather than decorative.
+  </p>
+</div>
+
+<div class="container blog main">
+  <p class="text">
+    Two honest qualifications. Read one at a time, the descriptions are not startling, and a reviewer
+    said so; what makes them non-trivial is that there is no cheaper way to get them. The decision
+    direction <b><i>&delta;</i></b> has no lexical neighbourhood at all &mdash; its highest cosine to any
+    vocabulary token is 0.07&ndash;0.15, at or below the random-vocabulary baseline, and the
+    tokens attaining it are multilingual fragments and code punctuation &mdash; so decoding it
+    through the frozen backbone into something a third-party model can use is the claim, not the
+    vividness of any one sentence. And when the probe is conditioned on a specific input, it tends to
+    describe <i>what the input contains</i> rather than <i>what makes it synthetic</i>: a correctly
+    detected AI abstract and a correctly rejected human abstract both elicit &ldquo;highly formal,
+    academic register&rdquo;, despite scores of +8.69 and &minus;8.06. An individual verbalization is
+    not a per-decision explanation, and we say so in the paper.
+  </p>
+</div>
+
+<!-- ============================ COSTS AND LIMITS ============================ -->
+<div class="container blog main">
+  <h1>What it costs, and where it breaks</h1>
+  <p class="text">
+    On a single H100, Gemma-4-E4B occupies 16.1&nbsp;GiB before training begins and peaks at
+    23.4&nbsp;GiB during it; five epochs take an hour and a half for audio and twenty-five minutes
+    for image at the dataset scale of the main table. The honest qualification is that while what is
+    <i>learned</i> is <i>2d</i> values, our implementation realizes those two rows by marking the whole
+    embedding table trainable and zeroing the rest in a backward hook, so the optimizer allocates
+    moment buffers for the full table &mdash; an implementation that splices a 2&nbsp;&times;&nbsp;<i>d</i> parameter
+    into the embedding output would attain the memory cost the parameter count implies. And cheap to
+    train is not cheap to run: inference is two full forward passes of a multimodal LLM per example,
+    which is far more than the small dedicated detectors we compare against.
+  </p>
+  <p class="text">
+    The failure modes are specific rather than generic. Transfer is not universal and can invert, as
+    the matrix above shows. Joint training inherits a scheduling hyperparameter that a per-modality
+    head would not have: under round-robin the all-four run takes roughly 20,000 text steps
+    against about 250 image batches per epoch, so image sees under 2% of the gradient and its
+    performance drops accordingly &mdash; rebalancing the budgets recovers most of it. Everything is
+    bounded by the backbone, which must already encode every target modality, and verbalization
+    quality is bounded by how well that backbone can talk about a modality at all &mdash; visibly
+    weaker for audio than for text or image. Under perturbation the pair degrades gracefully rather
+    than cliff-edges: the Llama text pair is essentially flat across all five RAID attack categories
+    at 0.97&ndash;1.00, while aggressive downscaling is the worst case for images, taking clean
+    0.91 down to 0.60 at a quarter resolution.
+  </p>
+</div>
+
+<!-- ============================ CITATION ============================ -->
+<div class="container blog main">
+  <hr class="section-divider">
+  <h2>Citation</h2>
+  <br>
+<pre><code class="plaintext">@article{fein2026multimodal,
+    title        = {Multimodal AI Detection In Two Words},
+    author       = {Fein, Daniel and Singhal, Arpita and Agrawala, Maneesh
+                    and Bohacek, Maty},
+    year         = {2026}
+  }</code></pre>
+</div>
+
+<div class="container blog main">
+  <hr class="section-divider">
+  <h2>Acknowledgements</h2>
+  <p class="text fnote">
+    The authors wish to thank John Hewitt for helpful suggestions.
+  </p>
+</div>
+
+<br>
+
+<footer>
+  <div class="container">
+    <p style="font-size:small; text-align:center;">
+      Last updated August 2026. This website is built on the modified <a href="https://shikun.io/projects/clarity" style="font-size:small;">Clarity Template</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="clarity/clarity.js"></script>
+</body>
+</html>

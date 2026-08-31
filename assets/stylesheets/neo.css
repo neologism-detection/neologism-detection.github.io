@@ -1,0 +1,162 @@
+/* ===================================================================
+   Additions for the two-token AI-detection site.
+   Palette follows the template's ink and greys; the accent hues are
+   reserved for measured quantities (above / at / below chance).
+   =================================================================== */
+:root{
+  --ink:#353535; --ink-2:#5f666c; --ink-3:#8a9198;
+  --rule:#e0e3e5; --hair:#eceef0;
+  --navy:#1C365F; --navy-2:#41648f;
+  --pos:#217D4C; --neg:#B03A2E; --mid:#8a9198;
+  --band:#E0E4E6;
+  --card:#ffffff;
+  --sans:ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'Inconsolata','Consolas','Menlo',monospace;
+}
+
+.neo-sans{font-family:var(--sans)}
+tt, code, kbd, samp{
+  font-family:var(--mono);
+  font-size:1.05em;
+  font-feature-settings:"liga" 0,"calt" 0;
+}
+tt{background:none;padding:0}
+
+/* the two trained tokens, set apart wherever they appear inline */
+.tok{
+  font-family:var(--mono);font-size:.95em;white-space:nowrap;
+  padding:.04em .22em;border-radius:4px;border:1px solid var(--hair);
+  background:#f7f8f9;
+}
+.tok.ai{color:#8c3b31;border-color:#efdcd9;background:#fdf6f5}
+.tok.real{color:#1f6b45;border-color:#d8e8e0;background:#f4faf7}
+
+/* inline svg icon inside .button.icon, sized like the font-awesome glyphs */
+.button.icon .neo-btn-icon{
+  height:1.05em;width:auto;padding-left:.5em;padding-bottom:1px;
+  box-sizing:content-box;flex:none;
+}
+
+/* ---------- figure cards ---------- */
+.figure-card{
+  border:1.5px solid #dfe6e9;border-radius:10px;overflow:hidden;
+  padding:18px;background:var(--card);
+}
+.figure-card img{display:block;width:100%;padding:0 !important;margin:0}
+.figure-row{display:flex;gap:24px;align-items:flex-start;margin:0 auto}
+.figure-row .figure-cell{flex:1 1 0;min-width:0}
+.figure-row .figure-cell .figure-card{margin:0}
+.figure-row .subcaption{
+  margin:12px 0 0 0;padding:0;text-align:center;font-weight:600;
+  font-size:80%;line-height:1.3;color:#2d3436;
+}
+
+/* hero cover frame, matching the reference sites' demo frame */
+.cover-frame{
+  width:100%;background:rgba(255,255,255,0.9);border-radius:12px;overflow:hidden;
+  box-shadow:0 1px 6px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);
+  padding:14px;
+}
+.cover-frame img{display:block;width:100%;margin:0 0 10px 0;padding:0}
+.cover-frame img:last-child{margin-bottom:0}
+
+/* ---------- generic result table ---------- */
+.neo-table{
+  width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14.5px;
+  background:var(--card);
+}
+.neo-table th{
+  text-align:left;font-weight:700;color:var(--ink);
+  padding:.55em .7em;border-bottom:1.5px solid var(--ink);white-space:nowrap;
+}
+.neo-table td{padding:.45em .7em;border-bottom:1px solid var(--hair);color:var(--ink-2)}
+.neo-table tbody tr:last-child td{border-bottom:none}
+.neo-table td.num,.neo-table th.num{text-align:right;font-variant-numeric:tabular-nums}
+.neo-table tr.ours td{color:var(--ink);font-weight:700;background:#f6f8fa}
+.neo-table tr.group td{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding-top:1.1em;border-bottom:1px solid var(--rule);
+}
+.neo-table .ci{font-size:11.5px;color:var(--ink-3);padding-left:.35em}
+.table-wrap{overflow-x:auto;background:var(--card);border:1.5px solid #dfe6e9;
+  border-radius:10px;padding:16px 18px}
+
+/* ---------- transfer matrix ---------- */
+.matrix-wrap{overflow-x:auto;background:var(--card);border:1.5px solid #dfe6e9;
+  border-radius:10px;padding:18px}
+.matrix{
+  border-collapse:separate;border-spacing:4px;margin:0 auto;
+  font-family:var(--sans);font-size:14px;
+}
+.matrix th{font-weight:700;color:var(--ink);padding:.3em .5em;font-size:13px}
+.matrix th.rowh{text-align:right;white-space:nowrap}
+.matrix th.colh{text-align:center}
+.matrix td{
+  text-align:center;padding:.55em .5em;border-radius:6px;min-width:104px;
+  font-variant-numeric:tabular-nums;line-height:1.25;
+}
+.matrix td .v{font-weight:700;font-size:15px;display:block;color:#20303f}
+.matrix td .c{font-size:10.5px;color:#5a6b78;display:block;margin-top:1px}
+.matrix td.diag{outline:2px solid var(--ink);outline-offset:-2px}
+.matrix .corner{border:none;background:none}
+.mlegend{
+  display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;
+  margin-top:14px;font-family:var(--sans);font-size:12px;color:var(--ink-2);
+}
+.mlegend .sw{display:inline-block;width:26px;height:12px;border-radius:3px;
+  vertical-align:-1px;margin-right:6px}
+
+/* ---------- verbalization cards ---------- */
+.verb-grid{display:flex;gap:20px;flex-wrap:wrap}
+.verb-card{
+  flex:1 1 300px;min-width:0;background:var(--card);border:1.5px solid #dfe6e9;
+  border-radius:10px;padding:16px 18px;
+}
+.verb-card .vhead{
+  font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink);
+  padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--rule);
+}
+.verb-card .vbody{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.verb-card .vbody b{color:var(--ink)}
+.verb-card .vmod{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;
+}
+
+/* ---------- number strip ---------- */
+.stat-row{display:flex;gap:20px;flex-wrap:wrap;margin:0}
+.stat{
+  flex:1 1 180px;background:var(--card);border:1.5px solid #dfe6e9;border-radius:10px;
+  padding:16px 18px;text-align:center;
+}
+.stat .n{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--navy);
+  line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .l{font-family:var(--sans);font-size:12.5px;color:var(--ink-2);margin-top:6px;
+  line-height:1.35}
+
+/* ---------- footnote ---------- */
+.fnote{font-size:88%;color:#666}
+
+@media screen and (max-width:768px){
+  .figure-row{flex-direction:column;gap:20px}
+  .figure-card{max-width:100% !important;padding:12px}
+  .container.blog p.caption{max-width:100% !important}
+  .matrix td{min-width:74px;padding:.45em .3em}
+  .matrix td .v{font-size:13px}
+  .matrix td .c{font-size:9px}
+  .verb-grid{flex-direction:column}
+}
+
+/* citation block (the template's highlight.js styling is not loaded) */
+div.container.blog pre{
+  background:#f6f8fa;border:1px solid var(--hair);border-radius:8px;
+  padding:14px 16px;overflow-x:auto;
+}
+div.container.blog pre code{
+  font-family:var(--mono);font-size:13.5px;line-height:1.5;color:var(--ink);
+  background:none;padding:0;white-space:pre;
+}
+
+/* subscripted token names in the inline formula */
+sub tt{font-size:.85em}
