@@ -1,4 +1,27 @@
 /* ===================================================================
+   Helvetica Neue, self-hosted.
+
+   main_free.css asks for `font-family: "HelveticaNeue"` in ~30 places and
+   tries to source it from
+     @import url(".../css2?family=HelveticaNeue:ital,wght@...")
+   but Helvetica Neue is not a Google Fonts family and that request returns
+   HTTP 400, so every one of those rules was silently falling back to the
+   browser's default sans (DejaVu on Linux, Arial on Windows).  Declaring the
+   faces here binds the same family name to the real font, which fixes the
+   template's own rules and everything below that inherits from them.
+   =================================================================== */
+@font-face{font-family:"HelveticaNeue";font-style:normal;font-weight:400;font-display:swap;
+  src:url("../fonts/HelveticaNeue/helveticaneue_regular.woff2") format("woff2")}
+@font-face{font-family:"HelveticaNeue";font-style:normal;font-weight:500;font-display:swap;
+  src:url("../fonts/HelveticaNeue/helveticaneue_medium.woff2") format("woff2")}
+@font-face{font-family:"HelveticaNeue";font-style:normal;font-weight:700;font-display:swap;
+  src:url("../fonts/HelveticaNeue/helveticaneue_bold.woff2") format("woff2")}
+@font-face{font-family:"HelveticaNeue";font-style:italic;font-weight:400;font-display:swap;
+  src:url("../fonts/HelveticaNeue/helveticaneue_italic.woff2") format("woff2")}
+@font-face{font-family:"HelveticaNeue";font-style:italic;font-weight:700;font-display:swap;
+  src:url("../fonts/HelveticaNeue/helveticaneue_bold_italic.woff2") format("woff2")}
+
+/* ===================================================================
    Additions for the two-token AI-detection site.
    Palette follows the template's ink and greys; the accent hues are
    reserved for measured quantities (above / at / below chance).
@@ -10,7 +33,7 @@
   --pos:#217D4C; --neg:#B03A2E; --mid:#8a9198;
   --band:#E0E4E6;
   --card:#ffffff;
-  --sans:ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --sans:"HelveticaNeue",'Helvetica Neue',Helvetica,Arial,sans-serif;
   --mono:'Inconsolata','Consolas','Menlo',monospace;
 }
 
