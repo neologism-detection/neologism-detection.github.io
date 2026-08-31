@@ -160,3 +160,10 @@ div.container.blog pre code{
 
 /* subscripted token names in the inline formula */
 sub tt{font-size:.85em}
+
+/* The Clarity template is a deliberately single-theme (light) design: it paints
+   body white and defines no dark variants. Pin the scheme so form controls and
+   scrollbars don't get themed by a dark host, and set the body colour from the
+   same token set as the surfaces, so nothing is inherited from the embedder. */
+:root{color-scheme:light}
+body{background-color:#fff;color:var(--ink)}
