@@ -42,13 +42,13 @@
   };
 
   var STAGES = [
-    { key: "frozen", chip: "Frozen",
+    { key: "frozen", n: "1", chip: "Frozen",
       note: "A multimodal LLM, entirely frozen — and the embedding matrix it reads every token from." },
-    { key: "expand", chip: "Two new words",
+    { key: "expand", n: "2", chip: "Two new tokens",
       note: "Two tokens are appended to the vocabulary and given a row each: <REAL> and <AIGEN>." },
-    { key: "train",  chip: "Training",
+    { key: "train",  n: "3", chip: "Training",
       note: "Each input is scored under both tokens. The loss on that pair updates the two rows and nothing else." },
-    { key: "infer",  chip: "Any modality",
+    { key: "infer",  n: "4", chip: "Any modality",
       note: "The gap between the two rows is the detector, and it applies to whatever the backbone can encode." }
   ];
 
@@ -111,8 +111,8 @@
                             markerWidth: 5.5, markerHeight: 5.5, orient: "auto-start-reverse" }, defs);
     el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: C.ink }, mk);
     var mkG = el("marker", { id: "tzArrowGrad", viewBox: "0 0 10 10", refX: 8, refY: 5,
-                             markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse" }, defs);
-    el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: "#D8DBDD" }, mkG);
+                             markerWidth: 5.5, markerHeight: 5.5, orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: "#BFC6CB" }, mkG);
 
     /* ================= persistent: the backbone ====================== */
     var MY = 108, MH = 74, MCY = MY + MH / 2;          /* backbone box */
@@ -142,7 +142,7 @@
 
     /* the two trained rows: hidden until stage 2 */
     var slots = el("g", { "class": "tz-slots" }, svg);
-    var RX = BX + 148, AX = BX + 250;
+    var RX = BX + 120, AX = BX + 200;
     function slot(x, fill, stroke, label, cls) {
       var g = el("g", { "class": "tz-slot " + cls, opacity: 0 }, slots);
       el("rect", { x: x, y: BY + 5, width: 22, height: BH - 10, rx: 2.5,
@@ -169,35 +169,38 @@
 
     function prompt(y, tone, toneFill, tokenLabel) {
       var g = el("g", {}, train);
-      el("rect", { x: 16, y: y, width: 146, height: 34, rx: 9,
+      el("rect", { x: 14, y: y, width: 136, height: 34, rx: 9,
                    fill: "#fff", stroke: tone, "stroke-width": 1.8,
                    "stroke-dasharray": "7 5" }, g);
-      var t = el("text", { x: 25, y: y + 21, "font-size": 8, "font-family": "var(--mono)",
+      var t = el("text", { x: 23, y: y + 21, "font-size": 8, "font-family": "var(--mono)",
                            fill: C.ink }, g);
       t.textContent = "[Image] This is a ";
       var ts = el("tspan", { fill: tone, "font-weight": 700 }, t);
       ts.textContent = tokenLabel;
       return g;
     }
-    prompt(MY - 24, C.ai, C.aiFill, "<AIGEN>");
-    prompt(MY + 26, C.real, C.realFill, "<REAL>");
+    /* the two prompts straddle the backbone's centre line, so the arrows
+       into it are level with the two coming out */
+    var IN_A = MCY - 27, IN_R = MCY + 27;      /* arrow heights, in and out */
+    prompt(IN_A - 17, C.ai, C.aiFill, "<AIGEN>");
+    prompt(IN_R - 17, C.real, C.realFill, "<REAL>");
 
     /* prompt -> backbone */
-    el("path", { d: "M 162 " + (MY - 7) + " L 166 " + (MY - 7), stroke: C.ink, "stroke-width": 2,
+    el("path", { d: "M 150 " + IN_A + " L 167 " + IN_A, stroke: C.ink, "stroke-width": 2,
                  "marker-end": "url(#tzArrow)", fill: "none" }, train);
-    el("path", { d: "M 162 " + (MY + 43) + " L 166 " + (MY + 43), stroke: C.ink, "stroke-width": 2,
+    el("path", { d: "M 150 " + IN_R + " L 167 " + IN_R, stroke: C.ink, "stroke-width": 2,
                  "marker-end": "url(#tzArrow)", fill: "none" }, train);
 
     /* backbone -> two log-probabilities */
-    el("path", { d: "M 314 " + (MY + 16) + " L 330 " + (MY + 16), stroke: C.ink, "stroke-width": 2,
+    el("path", { d: "M 313 " + IN_A + " L 331 " + IN_A, stroke: C.ink, "stroke-width": 2,
                  "marker-end": "url(#tzArrow)", fill: "none" }, train);
-    el("path", { d: "M 314 " + (MY + 58) + " L 330 " + (MY + 58), stroke: C.ink, "stroke-width": 2,
+    el("path", { d: "M 313 " + IN_R + " L 331 " + IN_R, stroke: C.ink, "stroke-width": 2,
                  "marker-end": "url(#tzArrow)", fill: "none" }, train);
-    var lp1 = el("text", { x: 336, y: MY + 19, "font-size": 9, "font-family": "var(--sans)", fill: C.ink }, train);
+    var lp1 = el("text", { x: 337, y: IN_A + 3, "font-size": 9, "font-family": "var(--sans)", fill: C.ink }, train);
     lp1.textContent = "log p(w | x, ";
     el("tspan", { fill: C.ai, "font-weight": 700, "font-family": "var(--mono)", "font-size": 8 }, lp1).textContent = "<AIGEN>";
     el("tspan", { fill: C.ink }, lp1).textContent = ")";
-    var lp2 = el("text", { x: 336, y: MY + 61, "font-size": 9, "font-family": "var(--sans)", fill: C.ink }, train);
+    var lp2 = el("text", { x: 337, y: IN_R + 3, "font-size": 9, "font-family": "var(--sans)", fill: C.ink }, train);
     lp2.textContent = "log p(w | x, ";
     el("tspan", { fill: C.real, "font-weight": 700, "font-family": "var(--mono)", "font-size": 8 }, lp2).textContent = "<REAL>";
     el("tspan", { fill: C.ink }, lp2).textContent = ")";
@@ -206,9 +209,9 @@
     var loss = el("g", { "class": "tz-loss" }, train);
     var LY = 352;                                   /* top of the loss row */
     [RX, AX].forEach(function (cx) {
-      el("path", { d: "M " + (cx + 11) + " " + (LY - 4) + " L " + (cx + 11) +
-                      " " + (BY + BH + 28),
-                   stroke: "#DCDFE1", "stroke-width": 5, fill: "none",
+      el("path", { d: "M " + (cx + 11) + " " + (LY - 1) + " L " + (cx + 11) +
+                      " " + (BY + BH + 26),
+                   stroke: "#BFC6CB", "stroke-width": 2, fill: "none",
                    "marker-end": "url(#tzArrowGrad)" }, loss);
     });
     el("rect", { x: 26, y: LY, width: 250, height: 40, rx: 7, fill: C.callout }, loss);
@@ -237,11 +240,17 @@
       modGroups.push(g);
     });
     /* the bracket that gathers every modality into one input */
-    el("path", { d: "M 112 71 L 132 71 L 132 191 L 112 191 M 132 " + MCY + " L 166 " + MCY,
-                 stroke: C.ink, "stroke-width": 2, fill: "none",
-                 "marker-end": "url(#tzArrow)" }, infer);
-    [203, 211, 219].forEach(function (cy) {
-      el("circle", { cx: 132, cy: cy, r: 1.7, fill: C.dash }, infer);
+    /* the bracket gathers every modality -- and the ellipsis standing for the
+       ones the backbone could take next -- into one input */
+    var stubs = "M 132 71 L 132 220";
+    [71, 111, 151, 191, 220].forEach(function (y) {
+      stubs += " M 112 " + y + " L 132 " + y;
+    });
+    el("path", { d: stubs, stroke: C.ink, "stroke-width": 2, fill: "none" }, infer);
+    el("path", { d: "M 133 " + MCY + " L 167 " + MCY, stroke: C.ink, "stroke-width": 2,
+                 fill: "none", "marker-end": "url(#tzArrow)" }, infer);
+    [212, 220, 228].forEach(function (cy) {
+      el("circle", { cx: 66, cy: cy, r: 1.8, fill: C.dash }, infer);
     });
 
     el("path", { d: "M 314 " + MCY + " L 330 " + MCY, stroke: C.ink, "stroke-width": 2,
@@ -291,7 +300,7 @@
       var b = document.createElement("button");
       b.type = "button";
       b.className = "tz-chip";
-      b.textContent = s.chip;
+      b.innerHTML = '<span class="tz-n">' + s.n + '</span>' + s.chip;
       b.setAttribute("role", "tab");
       b.setAttribute("aria-selected", k === 0 ? "true" : "false");
       b.addEventListener("click", function () { go(k, true); });
