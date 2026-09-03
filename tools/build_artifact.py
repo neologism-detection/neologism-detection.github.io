@@ -80,10 +80,21 @@ def main() -> None:
 
     html = re.sub(r'<img[^>]*src="([^"]+)"', img_sub, html)
 
-    # 3. local scripts are progressive enhancement only, and clarity.js is a
-    #    jQuery plugin -- drop the CDN tag with it so the preview console stays
-    #    clean under the artifact CSP, which blocks that host anyway.
-    html = re.sub(r'<script src="(?:assets/scripts|clarity)/[^"]+"></script>\n?', "", html)
+    # 3. scripts. teaser.js draws the hero figure and must travel with the
+    #    page, so it is inlined. navbar.js and clarity.js are progressive
+    #    enhancement the preview does not need, and clarity.js is a jQuery
+    #    plugin -- drop those together with the CDN tag, which the artifact
+    #    CSP blocks anyway.
+    def js_sub(m: re.Match) -> str:
+        src = m.group(1)
+        if src.endswith("teaser.js"):
+            p = os.path.join(HERE, src)
+            return ("<script>\n/* ---- " + src + " ---- */\n"
+                    + open(p, encoding="utf-8").read() + "\n</script>")
+        return ""
+
+    html = re.sub(r'<script src="((?:assets/scripts|clarity)/[^"]+)"[^>]*></script>\n?',
+                  js_sub, html)
     html = re.sub(r'<script src="https://ajax\.googleapis\.com/[^"]+"></script>\n?', "", html)
 
     # 4. the PDF is not carried into the preview

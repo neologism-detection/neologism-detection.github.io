@@ -190,3 +190,67 @@ sub tt{font-size:.85em}
    same token set as the surfaces, so nothing is inherited from the embedder. */
 :root{color-scheme:light}
 body{background-color:#fff;color:var(--ink)}
+
+/* ---------- animated teaser (assets/scripts/teaser.js) ---------- */
+.tz{display:flex;flex-direction:column;gap:10px}
+.tz-svg{display:block;width:100%;height:auto;overflow:visible}
+.tz-svg text{fill:var(--ink)}
+
+.tz-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tz-chip{
+  font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.02em;
+  color:var(--ink-2);background:rgba(255,255,255,.62);border:1px solid rgba(0,0,0,.09);
+  border-radius:999px;padding:4px 10px;cursor:pointer;
+  transition:background .18s ease,color .18s ease,border-color .18s ease;
+}
+.tz-chip:hover{background:#fff;color:var(--ink)}
+.tz-chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tz-chip:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+.tz-note{
+  font-family:var(--sans);font-size:11.5px;line-height:1.45;color:var(--ink-2);
+  margin:0;min-height:2.6em;
+}
+.tz-note .tz-t{font-family:var(--mono);font-size:.94em}
+.tz-note .tz-r{color:#1f6b45}
+.tz-note .tz-a{color:#8c3b31}
+
+/* stage cross-fades */
+.tz-layer{transition:opacity .45s ease}
+.tz-slot{transition:opacity .45s ease}
+.tz-ties{transition:opacity .45s ease}
+
+/* the two rows land in the dictionary */
+@keyframes tzPop{
+  0%{transform:translateY(-9px) scaleY(.35);opacity:0}
+  60%{transform:translateY(0) scaleY(1.12);opacity:1}
+  100%{transform:translateY(0) scaleY(1);opacity:1}
+}
+.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 303px}
+
+/* gradient arriving in the two trained rows */
+@keyframes tzCharge{
+  0%,100%{filter:none}
+  50%{filter:drop-shadow(0 0 5px rgba(232,80,58,.55))}
+}
+.tz-anim-train .tz-slot-ai rect,
+.tz-anim-train .tz-slot-real rect{animation:tzCharge 1.9s ease-in-out infinite}
+.tz-anim-train .tz-slot-real rect{animation-delay:.25s}
+
+/* the loss arrows pushing up into those rows */
+@keyframes tzRise{0%{opacity:.25;transform:translateY(5px)}50%{opacity:1;transform:translateY(0)}100%{opacity:.25;transform:translateY(5px)}}
+.tz-anim-train .tz-loss path{animation:tzRise 1.9s ease-in-out infinite}
+
+/* modality currently being pushed through the backbone */
+.tz-mod rect{transition:stroke .3s ease,fill .3s ease}
+.tz-mod text{transition:fill .3s ease}
+.tz-mod.on rect{stroke:var(--navy);fill:#eef4fb}
+.tz-mod.on text{fill:var(--navy)}
+
+@media (prefers-reduced-motion: reduce){
+  .tz-slot.tz-pop{animation:none}
+  .tz-anim-train .tz-slot-ai rect,
+  .tz-anim-train .tz-slot-real rect,
+  .tz-anim-train .tz-loss path{animation:none}
+  .tz-layer,.tz-slot,.tz-ties{transition:none}
+}
