@@ -254,3 +254,56 @@ body{background-color:#fff;color:var(--ink)}
   .tz-anim-train .tz-loss path{animation:none}
   .tz-layer,.tz-slot,.tz-ties{transition:none}
 }
+
+/* ---------- three-panel method figure ---------- */
+/* Fig. 1 ships as three separate images with their baked-in headings cropped
+   off, so the panel rules are gone and the labels below are real text. */
+.panel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch}
+.panel{margin:0;display:flex;flex-direction:column;gap:9px;height:100%}
+.panel-label{
+  font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+}
+.panel-key{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:19px;height:19px;border-radius:50%;background:var(--ink);color:#fff;
+  font-size:10.5px;font-weight:700;flex:none;
+}
+.panel .figure-card{padding:14px;display:flex;align-items:center;height:100%}
+.panel .figure-card img{width:100%}
+
+@media screen and (max-width:900px){
+  .panel-row{grid-template-columns:1fr;gap:22px}
+}
+
+/* ---------- compact results scoreboard ---------- */
+/* Replaces a 15-row table: one row per modality, ours against the strongest
+   baseline on that benchmark. The full table lives in the paper. */
+.scoreboard{
+  background:var(--card);border:1.5px solid #dfe6e9;border-radius:10px;
+  padding:6px 18px 14px;font-family:var(--sans);
+}
+.sb-head,.sb-row{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:14px;align-items:center}
+.sb-head{
+  font-size:10.5px;font-weight:700;letter-spacing:.045em;text-transform:uppercase;
+  color:var(--ink-3);padding:10px 0 8px;border-bottom:1.5px solid var(--ink);
+}
+.sb-head span:not(:first-child){text-align:right}
+.sb-row{padding:11px 0;border-bottom:1px solid var(--hair)}
+.sb-row:last-child{border-bottom:none}
+.sb-mod{font-size:14.5px;font-weight:700;color:var(--ink);line-height:1.25}
+.sb-mod span{
+  display:block;font-size:11px;font-weight:400;color:var(--ink-3);
+  letter-spacing:.01em;margin-top:2px;
+}
+.sb-cell{text-align:right;line-height:1.2}
+.sb-cell b{font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.sb-cell span{display:block;font-size:10.5px;color:var(--ink-3);margin-top:3px}
+.sb-cell.lead b{color:var(--pos)}
+.sb-cell.big b{font-size:22px}
+
+@media screen and (max-width:600px){
+  .sb-head,.sb-row{grid-template-columns:1fr 1fr;gap:8px}
+  .sb-head span:first-child{grid-column:1 / -1}
+  .sb-mod{grid-column:1 / -1;margin-bottom:4px}
+}

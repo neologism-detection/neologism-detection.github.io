@@ -70,8 +70,8 @@
 
     <div class="blog-cover" style="width:100% !important; overflow:hidden; align-items:center;">
       <div class="cover-frame" id="teaser">
-        <img src="figures/method-a.png" alt="Training: two embedding rows updated inside a frozen multimodal LLM">
-        <img src="figures/method-b.png" alt="Cross-modal inference: one score from the two trained rows">
+        <img src="figures/panel-a.png" alt="Training: two embedding rows updated inside a frozen multimodal LLM">
+        <img src="figures/panel-b.png" alt="Cross-modal inference: one score from the two trained rows">
       </div>
     </div>
   </div>
@@ -139,9 +139,20 @@
   </p>
 </div>
 
-<div class="container blog extra-large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
-  <div class="figure-card" style="max-width:100%; margin:0 auto;">
-    <img src="figures/method-full.png" alt="Method overview: training, cross-modal inference, and self-verbalization">
+<div class="container blog extra-extra-large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
+  <div class="panel-row">
+    <figure class="panel">
+      <figcaption class="panel-label"><span class="panel-key">A</span> Training</figcaption>
+      <div class="figure-card"><img src="figures/panel-a.png" alt="Both tokens are paired with the input in contrastive prompts; only their two rows of the embedding matrix receive gradient."></div>
+    </figure>
+    <figure class="panel">
+      <figcaption class="panel-label"><span class="panel-key">B</span> Cross-modal inference</figcaption>
+      <div class="figure-card"><img src="figures/panel-b.png" alt="At inference the two rows define one score that applies to any modality the backbone accepts at input."></div>
+    </figure>
+    <figure class="panel">
+      <figcaption class="panel-label"><span class="panel-key">C</span> Self-verbalization</figcaption>
+      <div class="figure-card"><img src="figures/panel-c.png" alt="The frozen model is asked what the tokens mean, and the answer is substituted back into the prompt and re-scored."></div>
+    </figure>
   </div>
   <p class="caption">
     <b>The whole method.</b> <i>(A)</i> Both tokens are paired with the input in contrastive prompts,
@@ -179,44 +190,40 @@
   </p>
 </div>
 
-<div class="container blog large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
-  <div class="table-wrap">
-    <table class="neo-table">
-      <thead>
-        <tr><th>Method</th><th class="num">In-distribution</th><th class="num">Out-of-distribution</th></tr>
-      </thead>
-      <tbody>
-        <tr class="group"><td colspan="3">Text &mdash; RAID &rarr; Beemo</td></tr>
-        <tr><td>DivEye</td><td class="num">0.91</td><td class="num">0.57</td></tr>
-        <tr><td>Binoculars</td><td class="num">0.85</td><td class="num">0.84</td></tr>
-        <tr><td>TMR-Detector</td><td class="num">1.00</td><td class="num">0.77</td></tr>
-        <tr class="ours"><td>Llama-3.1-8B-AI-Neo</td><td class="num">0.98<span class="ci">&plusmn;0.01</span><sup>&dagger;</sup></td><td class="num">0.79<span class="ci">&plusmn;0.01</span></td></tr>
-        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.96<span class="ci">[.95,.96]</span><sup>&dagger;</sup></td><td class="num">0.77<span class="ci">[.76,.78]</span></td></tr>
+<div class="container blog main gray" style="padding-top:3vh; padding-bottom:2vh;">
+  <div class="scoreboard">
+    <div class="sb-head">
+      <span>Modality</span><span>In-distribution</span><span>Out-of-distribution</span>
+    </div>
 
-        <tr class="group"><td colspan="3">Audio &mdash; AUDETER &rarr; In-the-Wild</td></tr>
-        <tr><td>AASIST</td><td class="num">1.00</td><td class="num">0.79</td></tr>
-        <tr><td>RawNet2</td><td class="num">1.00</td><td class="num">0.77</td></tr>
-        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">1.00<span class="ci">[1.00,1.00]</span></td><td class="num">0.70<span class="ci">[.68,.73]</span></td></tr>
-
-        <tr class="group"><td colspan="3">Image &mdash; GenImage &rarr; CIFAKE</td></tr>
-        <tr><td>UnivFD</td><td class="num">0.56</td><td class="num">0.47</td></tr>
-        <tr><td>AIDE</td><td class="num">0.82</td><td class="num">0.54</td></tr>
-        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.90<span class="ci">[.89,.91]</span></td><td class="num">0.61<span class="ci">[.58,.63]</span></td></tr>
-
-        <tr class="group"><td colspan="3">Video &mdash; Deepfake-Eval-2024 &rarr; DeeptraceReward</td></tr>
-        <tr><td>SBI</td><td class="num">0.76</td><td class="num">0.58</td></tr>
-        <tr><td>CDFA</td><td class="num">0.75</td><td class="num">0.60</td></tr>
-        <tr class="ours"><td>Gemma-4-E4B-AI-Neo</td><td class="num">0.78<span class="ci">[.75,.81]</span></td><td class="num">0.87<span class="ci">[.84,.90]</span></td></tr>
-      </tbody>
-    </table>
+    <div class="sb-row">
+      <div class="sb-mod">Text<span>RAID &rarr; Beemo</span></div>
+      <div class="sb-cell"><b>0.96</b><span>best 1.00 &middot; TMR</span></div>
+      <div class="sb-cell"><b>0.79</b><span>best 0.84 &middot; Binoculars</span></div>
+    </div>
+    <div class="sb-row">
+      <div class="sb-mod">Audio<span>AUDETER &rarr; In-the-Wild</span></div>
+      <div class="sb-cell"><b>1.00</b><span>best 1.00 &middot; AASIST</span></div>
+      <div class="sb-cell"><b>0.70</b><span>best 0.79 &middot; AASIST</span></div>
+    </div>
+    <div class="sb-row">
+      <div class="sb-mod">Image<span>GenImage &rarr; CIFAKE</span></div>
+      <div class="sb-cell lead"><b>0.90</b><span>best 0.82 &middot; AIDE</span></div>
+      <div class="sb-cell lead"><b>0.61</b><span>best 0.54 &middot; AIDE</span></div>
+    </div>
+    <div class="sb-row">
+      <div class="sb-mod">Video<span>DFE-2024 &rarr; DeeptraceReward</span></div>
+      <div class="sb-cell lead"><b>0.78</b><span>best 0.76 &middot; SBI</span></div>
+      <div class="sb-cell lead big"><b>0.87</b><span>best 0.60 &middot; CDFA</span></div>
+    </div>
   </div>
   <p class="caption">
-    <b>Detection performance, AUROC.</b> Our rows carry percentile-bootstrap 95% intervals over
-    test examples; &plusmn; denotes the standard deviation over three training seeds where no bootstrap
-    was run. Baselines are point estimates from released checkpoints.
-    <sup>&dagger;</sup>&nbsp;RAID ships no test split, so the in-distribution text row is measured
-    with train/test document overlap; on held-out RAID documents the same pair reaches 0.70. The
-    paper reports this in full.
+    <b>Two embedding rows against dedicated detectors.</b> AUROC for
+    <tt>Gemma-4-E4B-AI-Neo</tt>, with the strongest baseline on each benchmark beneath it;
+    green marks where the pair leads. A <tt>Llama-3.1-8B</tt> pair reaches 0.79 on text out of
+    distribution. Bootstrap intervals, every baseline, and the in-distribution text caveat
+    &mdash; RAID ships no test split, so that column is measured with train/test document
+    overlap, and on held-out documents the same pair reaches 0.70 &mdash; are in the paper.
   </p>
 </div>
 
