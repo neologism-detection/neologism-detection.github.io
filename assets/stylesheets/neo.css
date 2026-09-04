@@ -222,7 +222,13 @@ sub tt{font-size:.85em}
 body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 
 /* ---------- animated teaser (assets/scripts/teaser.js) ---------- */
-.tz{display:flex;flex-direction:column;gap:10px;container-type:inline-size}
+/* Double-clicking the gaps between chips and figure used to select the whole
+   block and flood it with the selection colour; only the caption is worth
+   selecting, so the rest opts out. */
+.tz{display:flex;flex-direction:column;gap:10px;container-type:inline-size;
+  position:relative;                 /* the caption probe measures against this */
+  -webkit-user-select:none;user-select:none}
+.tz-note{-webkit-user-select:text;user-select:text}
 .tz-svg{display:block;width:100%;height:auto;overflow:visible}
 .tz-svg text{fill:var(--ink)}
 
@@ -258,6 +264,7 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-note{
   font-family:var(--sans);font-size:clamp(11.5px,2.9cqw,13.5px);
   line-height:1.5;color:var(--ink-2);margin:2px 0 0;min-height:4.1em;
+  overflow:hidden;
 }
 .tz-note .tz-t{font-family:var(--mono);font-size:.94em}
 .tz-note .tz-r{color:#1f6b45}
@@ -367,7 +374,13 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 }
 
 /* ---------- animated teaser (assets/scripts/teaser.js) ---------- */
-.tz{display:flex;flex-direction:column;gap:10px;container-type:inline-size}
+/* Double-clicking the gaps between chips and figure used to select the whole
+   block and flood it with the selection colour; only the caption is worth
+   selecting, so the rest opts out. */
+.tz{display:flex;flex-direction:column;gap:10px;container-type:inline-size;
+  position:relative;                 /* the caption probe measures against this */
+  -webkit-user-select:none;user-select:none}
+.tz-note{-webkit-user-select:text;user-select:text}
 .tz-svg{display:block;width:100%;height:auto;overflow:visible}
 .tz-svg text{fill:var(--ink)}
 
@@ -403,6 +416,7 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-note{
   font-family:var(--sans);font-size:clamp(11.5px,2.9cqw,13.5px);
   line-height:1.5;color:var(--ink-2);margin:2px 0 0;min-height:4.1em;
+  overflow:hidden;
 }
 .tz-note .tz-t{font-family:var(--mono);font-size:.94em}
 .tz-note .tz-r{color:#1f6b45}

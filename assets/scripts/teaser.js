@@ -320,6 +320,31 @@
     var note = document.createElement("p");
     note.className = "tz-note";
 
+    /* The caption is one sentence per stage and they are not the same length,
+       so the card would grow and shrink as it advanced. Measure every stage
+       once at the current width and hold the tallest, which keeps the height
+       static without guessing a value that breaks when the column narrows. */
+    function noteHTML(i) {
+      return STAGES[i].note
+        .replace("<REAL>", '<code class="tz-t tz-r">&lt;REAL&gt;</code>')
+        .replace("<AIGEN>", '<code class="tz-t tz-a">&lt;AIGEN&gt;</code>');
+    }
+    function reserveNoteHeight() {
+      var probe = document.createElement("p");
+      probe.className = "tz-note";
+      probe.style.cssText = "position:absolute;left:0;right:0;visibility:hidden;" +
+                            "pointer-events:none;height:auto;min-height:0";
+      note.style.height = "auto";
+      wrap.appendChild(probe);
+      var tallest = 0;
+      for (var i = 0; i < STAGES.length; i++) {
+        probe.innerHTML = noteHTML(i);
+        tallest = Math.max(tallest, probe.offsetHeight);
+      }
+      wrap.removeChild(probe);
+      note.style.height = tallest + "px";
+    }
+
     STAGES.forEach(function (st, i) {
       var b = document.createElement("button");
       b.type = "button";
@@ -351,9 +376,7 @@
         c.classList.toggle("on", j === i);
         c.setAttribute("aria-selected", j === i ? "true" : "false");
       });
-      note.innerHTML = STAGES[i].note
-        .replace("<REAL>", '<code class="tz-t tz-r">&lt;REAL&gt;</code>')
-        .replace("<AIGEN>", '<code class="tz-t tz-a">&lt;AIGEN&gt;</code>');
+      note.innerHTML = noteHTML(i);
 
       train.setAttribute("opacity", st === "train" ? 1 : 0);
       infer.setAttribute("opacity", st === "infer" ? 1 : 0);
@@ -383,6 +406,16 @@
                            i === 0 ? 3000 : 4600);
       }
     }
+
+    reserveNoteHeight();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(reserveNoteHeight);   /* metrics shift once Charter lands */
+    }
+    var rz;
+    window.addEventListener("resize", function () {
+      clearTimeout(rz);
+      rz = setTimeout(reserveNoteHeight, 150);
+    });
 
     go(0, false);
     wrap.addEventListener("mouseenter", function () { clearTimeout(timer); });
