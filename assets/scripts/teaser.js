@@ -25,7 +25,7 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var W = 480, H = 380;
+  var W = 480, H = 386;
 
   var C = {
     ink:      "#20303f",
@@ -46,12 +46,13 @@
   };
 
   /* geometry -------------------------------------------------------- */
-  var MX = 196, MW = 136, MY = 92, MH = 80;        /* backbone box */
+  var MX = 196, MW = 122, MY = 66, MH = 92;        /* backbone box */
+  var GAP = 6;                                     /* arrow-to-box clearance */
   var MCX = MX + MW / 2, MCY = MY + MH / 2;
-  var BX = 20, BY = 222, BW = 440, BH = 36;        /* embedding matrix */
+  var BX = 20, BY = 236, BW = 440, BH = 36;        /* embedding matrix */
   var RX = BX + 130, AX = BX + 240, SW = 24;       /* the two trained rows */
   var LBL = BY + 54;                               /* row labels */
-  var GY = 318;                                    /* grey callout row */
+  var GY = 326;                                    /* grey callout row */
 
   var STAGES = [
     { key: "frozen", chip: "Frozen",
@@ -171,38 +172,41 @@
     var dict = el("g", {}, svg);
     el("rect", { x: BX, y: BY, width: BW, height: BH, rx: 3,
                  fill: C.bar, stroke: C.barEdge, "stroke-width": 1.2 }, dict);
-    /* ordinary rows run the full width of the bar, stepping around the two
-       trained rows instead of stopping short of them */
-    var PITCH = 8.6, tx = BX + 7;
-    while (tx <= BX + BW - 10) {
-      var clash = (tx > RX - 6 && tx < RX + SW + 2) || (tx > AX - 6 && tx < AX + SW + 2);
-      if (!clash) {
-        el("rect", { x: tx, y: BY + 7, width: 4, height: BH - 14, rx: 1.2,
-                     fill: C.cell, opacity: .75 }, dict);
-      }
-      tx += PITCH;
+    /* ordinary rows run the full width of the bar. They are drawn unbroken:
+       before the two tokens exist there is nothing to step around, and once
+       they do each trained row paints its own patch of bar over them. */
+    for (var tx = BX + 7; tx <= BX + BW - 10; tx += 8.6) {
+      el("rect", { x: tx, y: BY + 7, width: 4, height: BH - 14, rx: 1.2,
+                   fill: C.cell, opacity: .75 }, dict);
     }
-    var dLabel = el("text", { x: BX + BW, y: BY - 10, "text-anchor": "end",
-                              "font-size": 12, fill: C.ink3,
+    /* sits under the far right of the bar: above it the two skirt curves are
+       coming in, and to the left are the row labels */
+    var dLabel = el("text", { x: BX + BW, y: LBL, "text-anchor": "end",
+                              "font-size": 12.5, fill: C.ink3,
                               "font-family": "var(--sans)" }, dict);
 
     var slots = el("g", {}, svg);
     function slot(x, fill, stroke, label, cls) {
       var g = el("g", { "class": "tz-slot " + cls, opacity: 0 }, slots);
+      /* clears the ordinary rows underneath so the token sits in its own slot */
+      el("rect", { x: x - 3, y: BY + 2, width: SW + 6, height: BH - 4, fill: C.bar }, g);
       el("rect", { x: x, y: BY + 5, width: SW, height: BH - 10, rx: 3,
                    fill: fill, stroke: stroke, "stroke-width": 1.8 }, g);
-      text(label, x + SW / 2, LBL, { size: 11.5, weight: 700, fill: stroke, mono: true }, g);
+      text(label, x + SW / 2, LBL, { size: 12.5, weight: 700, fill: stroke, mono: true }, g);
       return g;
     }
     var slotReal = slot(RX, C.realFill, C.real, "<REAL>", "tz-slot-real");
     var slotAi   = slot(AX, C.aiFill,  C.ai,   "<AIGEN>", "tz-slot-ai");
 
-    var ties = el("g", { "class": "tz-ties", opacity: 0 }, svg);
-    [[MCX - 34, RX + SW / 2], [MCX + 34, AX + SW / 2]].forEach(function (pr) {
-      el("path", { d: "M " + pr[0] + " " + (MY + MH) + " C " + pr[0] + " " + (BY - 34) +
-                      ", " + pr[1] + " " + (BY - 38) + ", " + pr[1] + " " + (BY - 4),
-                   fill: "none", stroke: C.barEdge, "stroke-width": 1.2,
-                   "stroke-dasharray": "2 3", opacity: .85 }, ties);
+    /* the backbone reads the whole matrix, so the two curves fan from its
+       lower corners out to the corners of the bar -- as in the figure, and
+       present at every stage rather than only while training */
+    var ties = el("g", {}, svg);
+    [[MX + 16, BX + 5], [MX + MW - 16, BX + BW - 5]].forEach(function (pr) {
+      el("path", { d: "M " + pr[0] + " " + (MY + MH) + " C " + pr[0] + " " + (BY - 26) +
+                      ", " + pr[1] + " " + (BY - 30) + ", " + pr[1] + " " + (BY - 2),
+                   fill: "none", stroke: C.barEdge, "stroke-width": 1.3,
+                   "stroke-dasharray": "2 3.5", opacity: .8 }, ties);
     });
 
     /* ---- stage 3: training ------------------------------------------- */
@@ -211,9 +215,9 @@
 
     function prompt(cy, tone, token) {
       var g = el("g", {}, train);
-      el("rect", { x: 12, y: cy - 18, width: 164, height: 36, rx: 9, fill: "#fff",
+      el("rect", { x: 10, y: cy - 18, width: 162, height: 36, rx: 9, fill: "#fff",
                    stroke: tone, "stroke-width": 1.8, "stroke-dasharray": "7 5" }, g);
-      var t = el("text", { x: 21, y: cy + 4, "font-size": 10,
+      var t = el("text", { x: 19, y: cy + 5, "font-size": 10.5,
                            "font-family": "var(--mono)", fill: C.ink }, g);
       t.textContent = "[Image] This is a ";
       el("tspan", { fill: tone, "font-weight": 700 }, t).textContent = token;
@@ -222,18 +226,19 @@
     prompt(IN_R, C.real, "<REAL>");
 
     [IN_A, IN_R].forEach(function (y) {
-      el("path", { d: "M 176 " + y + " L " + (MX - 1) + " " + y, stroke: C.ink,
-                   "stroke-width": 2, fill: "none", "marker-end": "url(#tzArrow)" }, train);
-      el("path", { d: "M " + (MX + MW) + " " + y + " L " + (MX + MW + 17) + " " + y,
+      el("path", { d: "M " + (172 + GAP) + " " + y + " L " + (MX - GAP) + " " + y,
+                   stroke: C.ink, "stroke-width": 2, fill: "none",
+                   "marker-end": "url(#tzArrow)" }, train);
+      el("path", { d: "M " + (MX + MW + GAP) + " " + y + " L " + (MX + MW + GAP + 16) + " " + y,
                    stroke: C.ink, "stroke-width": 2, fill: "none",
                    "marker-end": "url(#tzArrow)" }, train);
     });
     [[IN_A, C.ai, "<AIGEN>"], [IN_R, C.real, "<REAL>"]].forEach(function (r) {
-      var t = el("text", { x: MX + MW + 22, y: r[0] + 4, "font-size": 10.5,
+      var t = el("text", { x: MX + MW + GAP + 22, y: r[0] + 4, "font-size": 11,
                            "font-family": "var(--sans)", fill: C.ink }, train);
       t.textContent = "log p(w | x, ";
       el("tspan", { fill: r[1], "font-weight": 700, "font-family": "var(--mono)",
-                    "font-size": 9.5 }, t).textContent = r[2];
+                    "font-size": 10 }, t).textContent = r[2];
       el("tspan", { fill: C.ink }, t).textContent = ")";
     });
 
@@ -259,17 +264,19 @@
 
     /* ---- stage 4: inference ------------------------------------------ */
     var infer = layer(svg, "infer");
-    var TH = 36, TG = 6, T0 = 44, modGroups = [];
+    var TH = 34, TG = 6, modGroups = [];
+    var T0 = MCY - (4 * TH + 3 * TG) / 2;            /* stack centred on the box */
     PICTO.forEach(function (m, k) {
       var y = T0 + k * (TH + TG);
       var g = el("g", { "class": "tz-mod" }, infer);
       el("rect", { x: 14, y: y, width: 106, height: TH, rx: 9, fill: "#fff",
                    stroke: C.dash, "stroke-width": 1.8 }, g);
-      m.draw(el("g", { "class": "tz-art" }, g), 25, y + 8);
-      text(m.label, 100, y + 22, { size: 11.5, anchor: "end", fill: C.ink2 }, g);
+      m.draw(el("g", { "class": "tz-art" }, g), 25, y + 7);
+      text(m.label, 102, y + 21.5, { size: 12, anchor: "end", fill: C.ink2 }, g);
       modGroups.push(g);
     });
-    var firstC = T0 + TH / 2, lastC = T0 + 3 * (TH + TG) + TH / 2, dotsY = lastC + 26;
+    var firstC = T0 + TH / 2, lastC = T0 + 3 * (TH + TG) + TH / 2;
+    var dotsY = Math.min(lastC + 26, BY - 26);   /* never runs into the matrix */
     var stubs = "M 132 " + firstC + " L 132 " + dotsY;
     for (var k = 0; k < 4; k++) {
       var cy = T0 + k * (TH + TG) + TH / 2;
@@ -280,34 +287,34 @@
     [-7, 0, 7].forEach(function (d) {
       el("circle", { cx: 67, cy: dotsY + d, r: 1.9, fill: C.dash }, infer);
     });
-    el("path", { d: "M 133 " + MCY + " L " + (MX - 1) + " " + MCY, stroke: C.ink,
+    el("path", { d: "M " + (132 + GAP) + " " + MCY + " L " + (MX - GAP) + " " + MCY, stroke: C.ink,
                  "stroke-width": 2, fill: "none", "marker-end": "url(#tzArrow)" }, infer);
-    el("path", { d: "M " + (MX + MW) + " " + MCY + " L " + (MX + MW + 17) + " " + MCY,
+    el("path", { d: "M " + (MX + MW + GAP) + " " + MCY + " L " + (MX + MW + GAP + 16) + " " + MCY,
                  stroke: C.ink, "stroke-width": 2, fill: "none",
                  "marker-end": "url(#tzArrow)" }, infer);
 
-    var sx = MX + MW + 22;
-    var sf = el("text", { x: sx, y: MCY - 12, "font-size": 12,
+    var sx = MX + MW + GAP + 22;
+    var sf = el("text", { x: sx, y: MCY - 15, "font-size": 13.5,
                           "font-family": "var(--sans)", fill: C.ink }, infer);
     el("tspan", { "font-style": "italic" }, sf).textContent = "s";
-    el("tspan", { "font-style": "italic", "font-size": 9, dy: 2 }, sf).textContent = "m";
-    el("tspan", { dy: -2 }, sf).textContent = "(";
+    el("tspan", { "font-style": "italic", "font-size": 10, dy: 2.5 }, sf).textContent = "m";
+    el("tspan", { dy: -2.5 }, sf).textContent = "(";
     el("tspan", { "font-style": "italic", "font-weight": 700 }, sf).textContent = "x";
     el("tspan", {}, sf).textContent = ") =";
-    var s2 = el("text", { x: sx, y: MCY + 4, "font-size": 10,
+    var s2 = el("text", { x: sx, y: MCY + 3, "font-size": 11.5,
                           "font-family": "var(--sans)", fill: C.ink }, infer);
     s2.textContent = "log p(w | ";
     el("tspan", { fill: C.ai, "font-weight": 700, "font-family": "var(--mono)",
-                  "font-size": 9 }, s2).textContent = "<AIGEN>";
+                  "font-size": 10.5 }, s2).textContent = "<AIGEN>";
     el("tspan", {}, s2).textContent = ")";
-    var s3 = el("text", { x: sx, y: MCY + 19, "font-size": 10,
+    var s3 = el("text", { x: sx, y: MCY + 20, "font-size": 11.5,
                           "font-family": "var(--sans)", fill: C.ink }, infer);
     s3.textContent = "− log p(w | ";
     el("tspan", { fill: C.real, "font-weight": 700, "font-family": "var(--mono)",
-                  "font-size": 9 }, s3).textContent = "<REAL>";
+                  "font-size": 10.5 }, s3).textContent = "<REAL>";
     el("tspan", {}, s3).textContent = ")";
-    text("AI-generated if > 0", sx, MCY + 40,
-         { size: 11, weight: 700, anchor: "start", fill: C.navy }, infer);
+    text("AI-generated if > 0", sx, MCY + 43,
+         { size: 12, weight: 700, anchor: "start", fill: C.navy }, infer);
 
     /* ---- chips + caption --------------------------------------------- */
     var note = document.createElement("p");
@@ -350,7 +357,6 @@
 
       train.setAttribute("opacity", st === "train" ? 1 : 0);
       infer.setAttribute("opacity", st === "infer" ? 1 : 0);
-      ties.setAttribute("opacity", st === "train" || st === "infer" ? 1 : 0);
 
       var vocab = st !== "frozen";
       slotReal.setAttribute("opacity", vocab ? 1 : 0);
