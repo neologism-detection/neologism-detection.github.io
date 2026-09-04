@@ -340,14 +340,21 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 }
 .sb-head span:not(:first-child){text-align:right}
 
+/* the group row doubles as the dataset row: each benchmark sits in the column
+   it was measured in, which removes the arrow and a line of height */
 .sb-group{
-  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--ink-2);padding:15px 0 7px;border-bottom:1px solid var(--rule);
-  margin-bottom:2px;
+  display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:16px;align-items:baseline;
+  padding:14px 0 6px;border-bottom:1px solid var(--rule);margin-bottom:2px;
 }
-.sb-group span{
-  text-transform:none;letter-spacing:.01em;font-weight:400;color:var(--ink-3);
-  font-size:11px;margin-left:9px;
+.sb-group .sb-mod{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-2);
+}
+.sb-group .sb-mod i{font-size:12px;color:var(--ink-3);width:14px;text-align:center}
+.sb-group .sb-ds{
+  text-align:right;font-size:11px;font-weight:400;color:var(--ink-3);
+  letter-spacing:.01em;
 }
 
 .sb-line{padding:5px 0;border-radius:5px}
@@ -356,17 +363,20 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
   text-align:right;font-size:15px;font-weight:600;color:var(--ink);
   font-variant-numeric:tabular-nums;line-height:1.3;
 }
+/* intervals sit beside the number, not beneath it, so an "ours" row is no
+   taller than a baseline row */
 .sb-v span{
-  display:block;font-size:10px;font-weight:400;color:var(--ink-3);
-  margin-top:1px;letter-spacing:.01em;
+  font-size:9.5px;font-weight:400;color:var(--ink-3);
+  letter-spacing:.01em;margin-left:4px;white-space:nowrap;
 }
-.sb-line.ours{background:#f7f9fa;margin:1px -10px;padding:6px 10px}
+.sb-line.ours{background:#f7f9fa;margin:1px -10px;padding:5px 10px}
 .sb-line.ours .sb-name{color:var(--ink);font-weight:700}
-.sb-line.ours .sb-v{font-weight:700;font-size:16px}
+.sb-line.ours .sb-v{font-weight:700;font-size:15.5px}
 .sb-v.lead{color:var(--pos)}
 
 @media screen and (max-width:600px){
-  .sb-head,.sb-line{grid-template-columns:1fr 62px 62px;gap:8px}
+  .sb-head,.sb-line,.sb-group{grid-template-columns:1fr 74px 74px;gap:7px}
+  .sb-v span{display:block;margin-left:0}
   .sb-name{font-size:12px}
   .sb-v{font-size:13.5px}
   .sb-line.ours .sb-v{font-size:14px}
@@ -511,3 +521,14 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
   .sb-head span:first-child{grid-column:1 / -1}
   .sb-mod{grid-column:1 / -1;margin-bottom:4px}
 }
+
+/* modality marks: one icon language across the figure, the results table,
+   the transfer matrix and the verbalization cards */
+/* Font Awesome gives the glyph a fixed width, so a block-level icon parks at
+   the left of the header cell; centre the box itself rather than its text */
+.matrix th.colh i{
+  display:block;margin:0 auto 3px;font-size:12px;color:var(--ink-3);line-height:1;
+}
+.matrix th.colh span{display:block}
+.verb-card .vmod{display:flex;align-items:center;gap:7px}
+.verb-card .vmod i{font-size:12px;color:var(--ink-3)}

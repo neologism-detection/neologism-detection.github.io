@@ -193,7 +193,10 @@
 <div class="container blog main gray" style="padding-top:3vh; padding-bottom:2vh;">
   <div class="scoreboard">
     <div class="sb-head"><span>Method</span><span>ID AUROC</span><span>OOD AUROC</span></div>
-    <div class="sb-group">Text<span>RAID &rarr; Beemo</span></div>
+    <div class="sb-group">
+      <span class="sb-mod"><i class="fa-solid fa-align-left" aria-hidden="true"></i>Text</span>
+      <span class="sb-ds">RAID</span><span class="sb-ds">Beemo</span>
+    </div>
     <div class="sb-line">
       <div class="sb-name">DivEye</div>
       <div class="sb-v">0.91</div>
@@ -221,15 +224,18 @@
     </div>
     <div class="sb-line ours">
       <div class="sb-name">Llama-3.1-8B-AI-Neo</div>
-      <div class="sb-v">0.98<span>&plusmn;0.01</span></div>
-      <div class="sb-v">0.79<span>&plusmn;0.01</span></div>
+      <div class="sb-v">0.98<span>&plusmn;.01</span></div>
+      <div class="sb-v">0.79<span>&plusmn;.01</span></div>
     </div>
     <div class="sb-line ours">
       <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
-      <div class="sb-v">0.96<span>[0.95, 0.96]</span></div>
-      <div class="sb-v">0.77<span>[0.76, 0.78]</span></div>
+      <div class="sb-v">0.96<span>[.95,.96]</span></div>
+      <div class="sb-v">0.77<span>[.76,.78]</span></div>
     </div>
-    <div class="sb-group">Audio<span>AUDETER &rarr; In-the-Wild</span></div>
+    <div class="sb-group">
+      <span class="sb-mod"><i class="fa-solid fa-volume-high" aria-hidden="true"></i>Audio</span>
+      <span class="sb-ds">AUDETER</span><span class="sb-ds">In-the-Wild</span>
+    </div>
     <div class="sb-line">
       <div class="sb-name">AASIST</div>
       <div class="sb-v">1.00</div>
@@ -242,10 +248,13 @@
     </div>
     <div class="sb-line ours">
       <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
-      <div class="sb-v">1.00<span>[1.00, 1.00]</span></div>
-      <div class="sb-v">0.70<span>[0.68, 0.73]</span></div>
+      <div class="sb-v">1.00<span>[1.00,1.00]</span></div>
+      <div class="sb-v">0.70<span>[.68,.73]</span></div>
     </div>
-    <div class="sb-group">Image<span>GenImage &rarr; CIFAKE</span></div>
+    <div class="sb-group">
+      <span class="sb-mod"><i class="fa-solid fa-image" aria-hidden="true"></i>Image</span>
+      <span class="sb-ds">GenImage</span><span class="sb-ds">CIFAKE</span>
+    </div>
     <div class="sb-line">
       <div class="sb-name">UnivFD</div>
       <div class="sb-v">0.56</div>
@@ -258,10 +267,13 @@
     </div>
     <div class="sb-line ours">
       <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
-      <div class="sb-v lead">0.90<span>[0.89, 0.91]</span></div>
-      <div class="sb-v lead">0.61<span>[0.58, 0.63]</span></div>
+      <div class="sb-v lead">0.90<span>[.89,.91]</span></div>
+      <div class="sb-v lead">0.61<span>[.58,.63]</span></div>
     </div>
-    <div class="sb-group">Video<span>DFE-2024 &rarr; DeeptraceReward</span></div>
+    <div class="sb-group">
+      <span class="sb-mod"><i class="fa-solid fa-film" aria-hidden="true"></i>Video</span>
+      <span class="sb-ds">DFE-2024</span><span class="sb-ds">DeeptraceReward</span>
+    </div>
     <div class="sb-line">
       <div class="sb-name">SBI</div>
       <div class="sb-v">0.76</div>
@@ -274,18 +286,18 @@
     </div>
     <div class="sb-line ours">
       <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
-      <div class="sb-v lead">0.78<span>[0.75, 0.81]</span></div>
-      <div class="sb-v lead">0.87<span>[0.84, 0.90]</span></div>
+      <div class="sb-v lead">0.78<span>[.75,.81]</span></div>
+      <div class="sb-v lead">0.87<span>[.84,.90]</span></div>
     </div>
   </div>
   <p class="caption">
-    <b>Detection performance, AUROC.</b> Each modality is trained and evaluated in
-    distribution, then carried unchanged to a held-out benchmark with disjoint generators
-    and content. Our rows carry percentile-bootstrap 95% intervals over test examples;
-    &plusmn; is the standard deviation over three training seeds where no bootstrap was run.
-    Baselines are point estimates from released checkpoints. RAID ships no test split, so
-    the in-distribution text column is measured with train/test document overlap &mdash; on
-    held-out documents the same pair reaches 0.70. The paper reports this in full.
+    <b>Detection performance, AUROC.</b> Each modality is trained and evaluated on the first
+    dataset, then carried unchanged to the second, which has disjoint generators and content.
+    Our rows carry percentile-bootstrap 95% intervals; &plusmn; is the standard deviation over
+    three training seeds where no bootstrap was run. Baselines are point estimates from released
+    checkpoints. RAID ships no test split, so the in-distribution text column is measured with
+    train/test document overlap &mdash; on held-out documents the same pair reaches 0.70. The
+    paper reports this in full.
   </p>
 </div>
 
@@ -327,15 +339,15 @@
           <th class="grp" colspan="4">Evaluated on</th>
         </tr>
         <tr>
-          <th class="colh chk">Txt</th>
-          <th class="colh chk">Aud</th>
-          <th class="colh chk">Img</th>
-          <th class="colh chk">Vid</th>
+          <th class="colh chk"><i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Txt</span></th>
+          <th class="colh chk"><i class="fa-solid fa-volume-high" aria-hidden="true"></i><span>Aud</span></th>
+          <th class="colh chk"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Img</span></th>
+          <th class="colh chk"><i class="fa-solid fa-film" aria-hidden="true"></i><span>Vid</span></th>
           <th class="gap"></th>
-          <th class="colh">Txt</th>
-          <th class="colh">Aud</th>
-          <th class="colh">Img</th>
-          <th class="colh">Vid</th>
+          <th class="colh"><i class="fa-solid fa-align-left" aria-hidden="true"></i><span>Txt</span></th>
+          <th class="colh"><i class="fa-solid fa-volume-high" aria-hidden="true"></i><span>Aud</span></th>
+          <th class="colh"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Img</span></th>
+          <th class="colh"><i class="fa-solid fa-film" aria-hidden="true"></i><span>Vid</span></th>
         </tr>
       </thead>
       <tbody>
@@ -458,7 +470,7 @@
 <div class="container blog large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
   <div class="verb-grid">
     <div class="verb-card">
-      <div class="vmod">Text</div>
+      <div class="vmod"><i class="fa-solid fa-align-left" aria-hidden="true"></i>Text</div>
       <div class="vhead">&lt;AIGEN&gt; text is characterized by&hellip;</div>
       <div class="vbody">
         <b>Brevity</b> &mdash; short sentences and paragraphs, often focused on conveying a single
@@ -469,7 +481,7 @@
       </div>
     </div>
     <div class="verb-card">
-      <div class="vmod">Image</div>
+      <div class="vmod"><i class="fa-solid fa-image" aria-hidden="true"></i>Image</div>
       <div class="vhead">&lt;AIGEN&gt; images are characterized by&hellip;</div>
       <div class="vbody">
         <b>Geometric and sharp</b> &mdash; clean lines and precise angles; shapes are rarely organic

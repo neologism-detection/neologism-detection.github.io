@@ -97,44 +97,44 @@
     return el("g", { "class": "tz-layer tz-" + name, opacity: 0 }, parent);
   }
 
-  /* ---- pictograms, so the last stage shows the media rather than
-          naming it ------------------------------------------------- */
-  function drawText(g, x, y) {
-    [26, 20, 24, 14].forEach(function (w, i) {
-      el("rect", { x: x, y: y + i * 5.5, width: w, height: 2.6, rx: 1.3, fill: C.ink3 }, g);
-    });
-  }
-  function drawImage(g, x, y) {
-    el("rect", { x: x, y: y, width: 28, height: 21, rx: 2.5,
-                 fill: "#DDEBF7", stroke: C.barEdge, "stroke-width": 1 }, g);
-    el("circle", { cx: x + 8, cy: y + 6.5, r: 3, fill: "#F5CE7A" }, g);
-    el("path", { d: "M " + x + " " + (y + 21) + " L " + (x + 10) + " " + (y + 9) +
-                    " L " + (x + 18) + " " + (y + 21) + " Z", fill: "#9CC3A0" }, g);
-    el("path", { d: "M " + (x + 12) + " " + (y + 21) + " L " + (x + 21) + " " + (y + 12) +
-                    " L " + (x + 28) + " " + (y + 21) + " Z", fill: "#7FAE86" }, g);
-  }
-  function drawAudio(g, x, y) {
-    [6, 13, 20, 9, 17, 11, 5].forEach(function (h, i) {
-      el("rect", { x: x + i * 4.2, y: y + 11 - h / 2, width: 2.4, height: h, rx: 1.2,
-                   fill: C.ink3 }, g);
-    });
-  }
-  function drawVideo(g, x, y) {
-    el("rect", { x: x, y: y, width: 28, height: 21, rx: 2.5,
-                 fill: "#E4E7EA", stroke: C.barEdge, "stroke-width": 1 }, g);
-    [0, 1, 2, 3].forEach(function (i) {
-      el("rect", { x: x + 2.5 + i * 6.4, y: y + 2, width: 2, height: 2, rx: .6, fill: "#fff" }, g);
-      el("rect", { x: x + 2.5 + i * 6.4, y: y + 17, width: 2, height: 2, rx: .6, fill: "#fff" }, g);
-    });
-    el("path", { d: "M " + (x + 11) + " " + (y + 7) + " L " + (x + 19) + " " + (y + 10.5) +
-                    " L " + (x + 11) + " " + (y + 14) + " Z", fill: C.ink2 }, g);
-  }
+  /* ---- modality marks, taken from the same Font Awesome set the header
+          buttons use, so the figure and the page share one icon language.
+          Path data is inlined rather than loaded as a font, so the glyphs
+          cannot arrive late or fail to load. ------------------------------ */
+  var ICONS = {
+    text:   { vb: "0 0 448 512",
+              name: "align-left",
+              d: "M288 64c0 17.7-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l224 0c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32L32 352c-17.7 0-32-14.3-32-32s14.3-32 32-32l224 0c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 224c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z" },
+    image:  { vb: "0 0 448 512",
+              name: "image",
+              d: "M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm64 80a48 48 0 1 1 0 96 48 48 0 1 1 0-96zM272 224c8.4 0 16.1 4.4 20.5 11.5l88 144c4.5 7.4 4.7 16.7 .5 24.3S368.7 416 360 416L88 416c-8.9 0-17.2-5-21.3-12.9s-3.5-17.5 1.6-24.8l56-80c4.5-6.4 11.8-10.2 19.7-10.2s15.2 3.8 19.7 10.2l26.4 37.8 61.4-100.5c4.4-7.1 12.1-11.5 20.5-11.5z" },
+    audio:  { vb: "0 0 640 512",
+              name: "volume-high",
+              d: "M533.6 32.5c-10.3-8.4-25.4-6.8-33.8 3.5s-6.8 25.4 3.5 33.8C557.5 113.8 592 180.8 592 256s-34.5 142.2-88.7 186.3c-10.3 8.4-11.8 23.5-3.5 33.8s23.5 11.8 33.8 3.5C598.5 426.7 640 346.2 640 256S598.5 85.2 533.6 32.5zM473.1 107c-10.3-8.4-25.4-6.8-33.8 3.5s-6.8 25.4 3.5 33.8C475.3 170.7 496 210.9 496 256s-20.7 85.3-53.2 111.8c-10.3 8.4-11.8 23.5-3.5 33.8s23.5 11.8 33.8 3.5c43.2-35.2 70.9-88.9 70.9-149s-27.7-113.8-70.9-149zm-60.5 74.5c-10.3-8.4-25.4-6.8-33.8 3.5s-6.8 25.4 3.5 33.8C393.1 227.6 400 241 400 256s-6.9 28.4-17.7 37.3c-10.3 8.4-11.8 23.5-3.5 33.8s23.5 11.8 33.8 3.5C434.1 312.9 448 286.1 448 256s-13.9-56.9-35.4-74.5zM80 352l48 0 134.1 119.2c6.4 5.7 14.6 8.8 23.1 8.8 19.2 0 34.8-15.6 34.8-34.8l0-378.4c0-19.2-15.6-34.8-34.8-34.8-8.5 0-16.7 3.1-23.1 8.8L128 160 80 160c-26.5 0-48 21.5-48 48l0 96c0 26.5 21.5 48 48 48z" },
+    video:  { vb: "0 0 448 512",
+              name: "film",
+              d: "M0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM48 368l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm304-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zM48 240l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm304-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zM48 112l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16L64 96c-8.8 0-16 7.2-16 16zM352 96c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0z" }
+  };
+
   var PICTO = [
-    { draw: drawText,  label: "Text"  },
-    { draw: drawImage, label: "Image" },
-    { draw: drawAudio, label: "Audio" },
-    { draw: drawVideo, label: "Video" }
+    { key: "text",  label: "Text"  },
+    { key: "image", label: "Image" },
+    { key: "audio", label: "Audio" },
+    { key: "video", label: "Video" }
   ];
+
+  /* draw one mark, scaled from its own viewBox into a 22px square */
+  function icon(parent, key, x, y, size, fill) {
+    var ic = ICONS[key];
+    var vb = ic.vb.split(" ").map(Number);
+    var k = size / Math.max(vb[2], vb[3]);
+    var g = el("g", {
+      transform: "translate(" + (x + (size - vb[2] * k) / 2) + "," +
+                 (y + (size - vb[3] * k) / 2) + ") scale(" + k + ")"
+    }, parent);
+    el("path", { d: ic.d, fill: fill }, g);
+    return g;
+  }
 
   function build(mount) {
     var wrap = document.createElement("div");
@@ -271,7 +271,7 @@
       var g = el("g", { "class": "tz-mod" }, infer);
       el("rect", { x: 14, y: y, width: 106, height: TH, rx: 9, fill: "#fff",
                    stroke: C.dash, "stroke-width": 1.8 }, g);
-      m.draw(el("g", { "class": "tz-art" }, g), 25, y + 7);
+      icon(el("g", { "class": "tz-art" }, g), m.key, 26, y + 8, 19, C.ink2);
       text(m.label, 102, y + 21.5, { size: 12, anchor: "end", fill: C.ink2 }, g);
       modGroups.push(g);
     });
