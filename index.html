@@ -142,15 +142,15 @@
 <div class="container blog extra-extra-large gray" style="padding-top:3vh; padding-bottom:1.5vh;">
   <div class="panel-row">
     <figure class="panel">
-      <figcaption class="panel-label"><span class="panel-key">A</span> Training</figcaption>
+      <figcaption class="panel-label">A: Training</figcaption>
       <div class="figure-card"><img src="figures/panel-a.png" alt="Both tokens are paired with the input in contrastive prompts; only their two rows of the embedding matrix receive gradient."></div>
     </figure>
     <figure class="panel">
-      <figcaption class="panel-label"><span class="panel-key">B</span> Cross-modal inference</figcaption>
+      <figcaption class="panel-label">B: Cross-modal inference</figcaption>
       <div class="figure-card"><img src="figures/panel-b.png" alt="At inference the two rows define one score that applies to any modality the backbone accepts at input."></div>
     </figure>
     <figure class="panel">
-      <figcaption class="panel-label"><span class="panel-key">C</span> Self-verbalization</figcaption>
+      <figcaption class="panel-label">C: Self-verbalization</figcaption>
       <div class="figure-card"><img src="figures/panel-c.png" alt="The frozen model is asked what the tokens mean, and the answer is substituted back into the prompt and re-scored."></div>
     </figure>
   </div>
@@ -192,38 +192,100 @@
 
 <div class="container blog main gray" style="padding-top:3vh; padding-bottom:2vh;">
   <div class="scoreboard">
-    <div class="sb-head">
-      <span>Modality</span><span>In-distribution</span><span>Out-of-distribution</span>
+    <div class="sb-head"><span>Method</span><span>ID AUROC</span><span>OOD AUROC</span></div>
+    <div class="sb-group">Text<span>RAID &rarr; Beemo</span></div>
+    <div class="sb-line">
+      <div class="sb-name">DivEye</div>
+      <div class="sb-v">0.91</div>
+      <div class="sb-v">0.57</div>
     </div>
-
-    <div class="sb-row">
-      <div class="sb-mod">Text<span>RAID &rarr; Beemo</span></div>
-      <div class="sb-cell"><b>0.96</b><span>best 1.00 &middot; TMR</span></div>
-      <div class="sb-cell"><b>0.79</b><span>best 0.84 &middot; Binoculars</span></div>
+    <div class="sb-line">
+      <div class="sb-name">Binoculars</div>
+      <div class="sb-v">0.85</div>
+      <div class="sb-v">0.84</div>
     </div>
-    <div class="sb-row">
-      <div class="sb-mod">Audio<span>AUDETER &rarr; In-the-Wild</span></div>
-      <div class="sb-cell"><b>1.00</b><span>best 1.00 &middot; AASIST</span></div>
-      <div class="sb-cell"><b>0.70</b><span>best 0.79 &middot; AASIST</span></div>
+    <div class="sb-line">
+      <div class="sb-name">TMR-Detector</div>
+      <div class="sb-v">1.00</div>
+      <div class="sb-v">0.77</div>
     </div>
-    <div class="sb-row">
-      <div class="sb-mod">Image<span>GenImage &rarr; CIFAKE</span></div>
-      <div class="sb-cell lead"><b>0.90</b><span>best 0.82 &middot; AIDE</span></div>
-      <div class="sb-cell lead"><b>0.61</b><span>best 0.54 &middot; AIDE</span></div>
+    <div class="sb-line">
+      <div class="sb-name">Llama-3.1-8B-Classifier</div>
+      <div class="sb-v">0.99</div>
+      <div class="sb-v">0.72</div>
     </div>
-    <div class="sb-row">
-      <div class="sb-mod">Video<span>DFE-2024 &rarr; DeeptraceReward</span></div>
-      <div class="sb-cell lead"><b>0.78</b><span>best 0.76 &middot; SBI</span></div>
-      <div class="sb-cell lead big"><b>0.87</b><span>best 0.60 &middot; CDFA</span></div>
+    <div class="sb-line">
+      <div class="sb-name">Gemma-4-E4B-Classifier</div>
+      <div class="sb-v">0.97</div>
+      <div class="sb-v">0.71</div>
+    </div>
+    <div class="sb-line ours">
+      <div class="sb-name">Llama-3.1-8B-AI-Neo</div>
+      <div class="sb-v">0.98<span>&plusmn;0.01</span></div>
+      <div class="sb-v">0.79<span>&plusmn;0.01</span></div>
+    </div>
+    <div class="sb-line ours">
+      <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
+      <div class="sb-v">0.96<span>[0.95, 0.96]</span></div>
+      <div class="sb-v">0.77<span>[0.76, 0.78]</span></div>
+    </div>
+    <div class="sb-group">Audio<span>AUDETER &rarr; In-the-Wild</span></div>
+    <div class="sb-line">
+      <div class="sb-name">AASIST</div>
+      <div class="sb-v">1.00</div>
+      <div class="sb-v">0.79</div>
+    </div>
+    <div class="sb-line">
+      <div class="sb-name">RawNet2</div>
+      <div class="sb-v">1.00</div>
+      <div class="sb-v">0.77</div>
+    </div>
+    <div class="sb-line ours">
+      <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
+      <div class="sb-v">1.00<span>[1.00, 1.00]</span></div>
+      <div class="sb-v">0.70<span>[0.68, 0.73]</span></div>
+    </div>
+    <div class="sb-group">Image<span>GenImage &rarr; CIFAKE</span></div>
+    <div class="sb-line">
+      <div class="sb-name">UnivFD</div>
+      <div class="sb-v">0.56</div>
+      <div class="sb-v">0.47</div>
+    </div>
+    <div class="sb-line">
+      <div class="sb-name">AIDE</div>
+      <div class="sb-v">0.82</div>
+      <div class="sb-v">0.54</div>
+    </div>
+    <div class="sb-line ours">
+      <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
+      <div class="sb-v lead">0.90<span>[0.89, 0.91]</span></div>
+      <div class="sb-v lead">0.61<span>[0.58, 0.63]</span></div>
+    </div>
+    <div class="sb-group">Video<span>DFE-2024 &rarr; DeeptraceReward</span></div>
+    <div class="sb-line">
+      <div class="sb-name">SBI</div>
+      <div class="sb-v">0.76</div>
+      <div class="sb-v">0.58</div>
+    </div>
+    <div class="sb-line">
+      <div class="sb-name">CDFA</div>
+      <div class="sb-v">0.75</div>
+      <div class="sb-v">0.60</div>
+    </div>
+    <div class="sb-line ours">
+      <div class="sb-name">Gemma-4-E4B-AI-Neo</div>
+      <div class="sb-v lead">0.78<span>[0.75, 0.81]</span></div>
+      <div class="sb-v lead">0.87<span>[0.84, 0.90]</span></div>
     </div>
   </div>
   <p class="caption">
-    <b>Two embedding rows against dedicated detectors.</b> AUROC for
-    <tt>Gemma-4-E4B-AI-Neo</tt>, with the strongest baseline on each benchmark beneath it;
-    green marks where the pair leads. A <tt>Llama-3.1-8B</tt> pair reaches 0.79 on text out of
-    distribution. Bootstrap intervals, every baseline, and the in-distribution text caveat
-    &mdash; RAID ships no test split, so that column is measured with train/test document
-    overlap, and on held-out documents the same pair reaches 0.70 &mdash; are in the paper.
+    <b>Detection performance, AUROC.</b> Each modality is trained and evaluated in
+    distribution, then carried unchanged to a held-out benchmark with disjoint generators
+    and content. Our rows carry percentile-bootstrap 95% intervals over test examples;
+    &plusmn; is the standard deviation over three training seeds where no bootstrap was run.
+    Baselines are point estimates from released checkpoints. RAID ships no test split, so
+    the in-distribution text column is measured with train/test document overlap &mdash; on
+    held-out documents the same pair reaches 0.70. The paper reports this in full.
   </p>
 </div>
 
@@ -232,28 +294,14 @@
     The video result is the one we did not expect. On DeeptraceReward &mdash; modern text-to-video
     generators the pair has never seen &mdash; two embedding rows reach 0.87 where the dedicated
     video detectors sit at 0.58 and 0.60, and that margin survives a 6.6&times; increase in the
-    size of the evaluation set. The image row tells the complementary story about benchmarks rather
-    than about methods: the 0.61 on CIFAKE is not a failure to generalize across generators but a
-    measurement of something else entirely, which is worth separating out.
+    size of the evaluation set. The image row says something about the benchmark rather than the
+    method: CIFAKE pairs 32&times;32 CIFAR-10 content with a single generator, so it moves resolution
+    and subject matter at the same time as the generator, and 0.61 is what that compound shift costs
+    every detector on it. Measured against modern generators drawn from GenImage's own content
+    distribution, the same unchanged checkpoint reaches 0.92 and 0.89.
   </p>
 </div>
 
-<div class="container blog large gray" style="padding-top:3vh; padding-bottom:2.5vh;">
-  <div class="stat-row" style="max-width:100%;margin:0 auto;">
-    <div class="stat"><div class="n">0.92</div><div class="l">FLUX.1, unseen generator<br>(GenImage++)</div></div>
-    <div class="stat"><div class="n">0.89</div><div class="l">Stable Diffusion 3, unseen generator</div></div>
-    <div class="stat"><div class="n">0.61</div><div class="l">CIFAKE, generator <i>and</i> 32&times;32 domain shift</div></div>
-  </div>
-  <p class="caption" style="max-width:92%;margin:1.4vh auto 0 auto;">
-    <b>Separating generator shift from content shift.</b> CIFAKE pairs 32&times;32 CIFAR-10
-    content with a single generator, so it moves resolution and subject matter at the same time as
-    the generator; every image in it, real and synthetic alike, scores positive under our detector.
-    Evaluated instead on GenImage++, whose modern generators are prompted from GenImage's own content
-    distribution, the same unchanged checkpoint transfers substantially. The remaining gap is also
-    cheap to close: because the trainable footprint is two rows, re-fitting them on 1,000
-    labelled pairs lifts CIFAKE to 0.97 and OpenFake from 0.64 to 0.97.
-  </p>
-</div>
 
 <!-- ============================ CROSS-MODAL ============================ -->
 <div class="container blog main">

@@ -162,7 +162,7 @@ tt{background:none;padding:0}
   font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink);
   padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--rule);
 }
-.verb-card .vbody{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.verb-card .vbody{font-family:"Charter",Georgia,serif;font-size:14.5px;line-height:1.55;color:var(--ink-2)}
 .verb-card .vbody b{color:var(--ink)}
 .verb-card .vmod{
   font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.12em;
@@ -211,7 +211,10 @@ sub tt{font-size:.85em}
    scrollbars don't get themed by a dark host, and set the body colour from the
    same token set as the surfaces, so nothing is inherited from the embedder. */
 :root{color-scheme:light}
-body{background-color:#fff;color:var(--ink)}
+/* main_free.css styles its own selectors but never sets a family on <body>,
+   so any element without an explicit rule fell back to the browser's default
+   serif. Pin the page's body face here so that can't happen again. */
+body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 
 /* ---------- animated teaser (assets/scripts/teaser.js) ---------- */
 .tz{display:flex;flex-direction:column;gap:10px}
@@ -292,13 +295,142 @@ body{background-color:#fff;color:var(--ink)}
 .panel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch}
 .panel{margin:0;display:flex;flex-direction:column;gap:9px;height:100%}
 .panel-label{
-  font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink);
-  display:flex;align-items:center;gap:8px;
+  font-family:var(--sans);font-size:14.5px;font-weight:700;color:var(--ink);
+  text-align:center;letter-spacing:.01em;
 }
-.panel-key{
+.panel .figure-card{padding:14px;display:flex;align-items:center;height:100%}
+.panel .figure-card img{width:100%}
+
+@media screen and (max-width:900px){
+  .panel-row{grid-template-columns:1fr;gap:22px}
+}
+
+/* ---------- results scoreboard ---------- */
+.scoreboard{
+  background:var(--card);border:1.5px solid #dfe6e9;border-radius:10px;
+  padding:6px 20px 14px;font-family:var(--sans);
+}
+.sb-head,.sb-line{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:16px;align-items:baseline}
+.sb-head{
+  font-size:10.5px;font-weight:700;letter-spacing:.045em;text-transform:uppercase;
+  color:var(--ink-3);padding:10px 0 8px;border-bottom:1.5px solid var(--ink);
+}
+.sb-head span:not(:first-child){text-align:right}
+
+.sb-group{
+  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-2);padding:15px 0 7px;border-bottom:1px solid var(--rule);
+  margin-bottom:2px;
+}
+.sb-group span{
+  text-transform:none;letter-spacing:.01em;font-weight:400;color:var(--ink-3);
+  font-size:11px;margin-left:9px;
+}
+
+.sb-line{padding:5px 0;border-radius:5px}
+.sb-name{font-size:13.5px;color:var(--ink-2);line-height:1.3}
+.sb-v{
+  text-align:right;font-size:15px;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1.3;
+}
+.sb-v span{
+  display:block;font-size:10px;font-weight:400;color:var(--ink-3);
+  margin-top:1px;letter-spacing:.01em;
+}
+.sb-line.ours{background:#f7f9fa;margin:1px -10px;padding:6px 10px}
+.sb-line.ours .sb-name{color:var(--ink);font-weight:700}
+.sb-line.ours .sb-v{font-weight:700;font-size:16px}
+.sb-v.lead{color:var(--pos)}
+
+@media screen and (max-width:600px){
+  .sb-head,.sb-line{grid-template-columns:1fr 62px 62px;gap:8px}
+  .sb-name{font-size:12px}
+  .sb-v{font-size:13.5px}
+  .sb-line.ours .sb-v{font-size:14px}
+  .sb-v span{font-size:9px}
+}
+
+/* ---------- animated teaser (assets/scripts/teaser.js) ---------- */
+.tz{display:flex;flex-direction:column;gap:10px}
+.tz-svg{display:block;width:100%;height:auto;overflow:visible}
+.tz-svg text{fill:var(--ink)}
+
+.tz-chips{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tz-n{
   display:inline-flex;align-items:center;justify-content:center;
-  width:19px;height:19px;border-radius:50%;background:var(--ink);color:#fff;
-  font-size:10.5px;font-weight:700;flex:none;
+  width:18px;height:18px;border-radius:50%;flex:none;
+  background:rgba(0,0,0,.07);color:var(--ink-2);
+  font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;
+  transition:background .18s ease,color .18s ease;
+}
+.tz-chip.on .tz-n{background:rgba(255,255,255,.22);color:#fff}
+.tz-chip{
+  display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;
+  font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.01em;
+  color:var(--ink-2);background:rgba(255,255,255,.62);border:1px solid rgba(0,0,0,.09);
+  border-radius:999px;padding:6px 12px 6px 7px;cursor:pointer;text-align:left;
+  transition:background .18s ease,color .18s ease,border-color .18s ease;
+}
+.tz-chip:hover{background:#fff;color:var(--ink)}
+.tz-chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tz-chip:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+.tz-note{
+  font-family:var(--sans);font-size:11.5px;line-height:1.45;color:var(--ink-2);
+  margin:0;min-height:2.6em;
+}
+.tz-note .tz-t{font-family:var(--mono);font-size:.94em}
+.tz-note .tz-r{color:#1f6b45}
+.tz-note .tz-a{color:#8c3b31}
+
+/* stage cross-fades */
+.tz-layer{transition:opacity .45s ease}
+.tz-slot{transition:opacity .45s ease}
+.tz-ties{transition:opacity .45s ease}
+
+/* the two rows land in the dictionary */
+@keyframes tzPop{
+  0%{transform:translateY(-9px) scaleY(.35);opacity:0}
+  60%{transform:translateY(0) scaleY(1.12);opacity:1}
+  100%{transform:translateY(0) scaleY(1);opacity:1}
+}
+.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 303px}
+
+/* gradient arriving in the two trained rows */
+@keyframes tzCharge{
+  0%,100%{filter:none}
+  50%{filter:drop-shadow(0 0 5px rgba(232,80,58,.55))}
+}
+.tz-anim-train .tz-slot-ai rect,
+.tz-anim-train .tz-slot-real rect{animation:tzCharge 1.9s ease-in-out infinite}
+.tz-anim-train .tz-slot-real rect{animation-delay:.25s}
+
+/* the loss arrows pushing up into those rows */
+@keyframes tzRise{0%{opacity:.25;transform:translateY(5px)}50%{opacity:1;transform:translateY(0)}100%{opacity:.25;transform:translateY(5px)}}
+.tz-anim-train .tz-loss path{animation:tzRise 1.9s ease-in-out infinite}
+
+/* modality currently being pushed through the backbone */
+.tz-mod rect{transition:stroke .3s ease,fill .3s ease}
+.tz-mod text{transition:fill .3s ease}
+.tz-mod.on rect{stroke:var(--navy);fill:#eef4fb}
+.tz-mod.on text{fill:var(--navy)}
+
+@media (prefers-reduced-motion: reduce){
+  .tz-slot.tz-pop{animation:none}
+  .tz-anim-train .tz-slot-ai rect,
+  .tz-anim-train .tz-slot-real rect,
+  .tz-anim-train .tz-loss path{animation:none}
+  .tz-layer,.tz-slot,.tz-ties{transition:none}
+}
+
+/* ---------- three-panel method figure ---------- */
+/* Fig. 1 ships as three separate images with their baked-in headings cropped
+   off, so the panel rules are gone and the labels below are real text. */
+.panel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch}
+.panel{margin:0;display:flex;flex-direction:column;gap:9px;height:100%}
+.panel-label{
+  font-family:var(--sans);font-size:14.5px;font-weight:700;color:var(--ink);
+  text-align:center;letter-spacing:.01em;
 }
 .panel .figure-card{padding:14px;display:flex;align-items:center;height:100%}
 .panel .figure-card img{width:100%}
