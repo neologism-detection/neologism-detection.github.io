@@ -198,14 +198,11 @@ tt{background:none;padding:0}
   .verb-grid{flex-direction:column}
 }
 
-/* citation block (the template's highlight.js styling is not loaded) */
-div.container.blog pre{
-  background:#f6f8fa;border:1px solid var(--hair);border-radius:8px;
-  padding:14px 16px;overflow-x:auto;
-}
+/* Citation block: main_free.css already gives `pre code` the #fafafa slab the
+   other sites on this template show, so the block needs no card of its own --
+   only the size and colour highlight.js would otherwise have set. */
 div.container.blog pre code{
-  font-family:var(--mono);font-size:13.5px;line-height:1.5;color:var(--ink);
-  background:none;padding:0;white-space:pre;
+  font-size:13.5px;line-height:1.5;color:var(--ink);white-space:pre;
 }
 
 /* subscripted token names in the inline formula */
