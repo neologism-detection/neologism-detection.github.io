@@ -135,8 +135,12 @@ tt{background:none;padding:0}
   text-align:center;padding:.5em .2em;font-size:13px;line-height:1;
   background:none;
 }
-.matrix td.chk .tick{color:var(--pos);font-weight:700}
-.matrix td.chk .no{color:#cdd3d7}
+/* a filled box reads as "in the training mixture" more directly than a tick,
+   and does not depend on the font's glyph for U+2713 */
+.matrix td.chk .tick,
+.matrix td.chk .no{display:inline-block;width:13px;height:13px;border-radius:3.5px}
+.matrix td.chk .tick{background:var(--pos);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.matrix td.chk .no{background:#fff;box-shadow:inset 0 0 0 1.5px #dde2e5}
 
 /* right block: the score, shaded by strength */
 .matrix td.val{
@@ -184,6 +188,7 @@ tt{background:none;padding:0}
 .fnote{font-size:88%;color:#666}
 
 @media screen and (max-width:768px){
+  .tz-chips{flex-wrap:wrap}
   .figure-row{flex-direction:column;gap:20px}
   .figure-card{max-width:100% !important;padding:12px}
   .container.blog p.caption{max-width:100% !important}
@@ -221,20 +226,21 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-svg{display:block;width:100%;height:auto;overflow:visible}
 .tz-svg text{fill:var(--ink)}
 
-.tz-chips{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tz-chips{display:flex;flex-wrap:nowrap;gap:6px}
 .tz-n{
   display:inline-flex;align-items:center;justify-content:center;
-  width:18px;height:18px;border-radius:50%;flex:none;
+  width:17px;height:17px;border-radius:50%;flex:none;
   background:rgba(0,0,0,.07);color:var(--ink-2);
   font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;
   transition:background .18s ease,color .18s ease;
 }
 .tz-chip.on .tz-n{background:rgba(255,255,255,.22);color:#fff}
 .tz-chip{
-  display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;
-  font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.01em;
+  display:inline-flex;align-items:center;justify-content:flex-start;gap:6px;
+  font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0;
+  text-transform:none;white-space:nowrap;flex:0 0 auto;
   color:var(--ink-2);background:rgba(255,255,255,.62);border:1px solid rgba(0,0,0,.09);
-  border-radius:999px;padding:6px 12px 6px 7px;cursor:pointer;text-align:left;
+  border-radius:999px;padding:5px 10px 5px 5px;cursor:pointer;text-align:left;
   transition:background .18s ease,color .18s ease,border-color .18s ease;
 }
 .tz-chip:hover{background:#fff;color:var(--ink)}
@@ -242,8 +248,8 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-chip:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 
 .tz-note{
-  font-family:var(--sans);font-size:11.5px;line-height:1.45;color:var(--ink-2);
-  margin:0;min-height:2.6em;
+  font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  margin:2px 0 0;min-height:4.1em;
 }
 .tz-note .tz-t{font-family:var(--mono);font-size:.94em}
 .tz-note .tz-r{color:#1f6b45}
@@ -260,7 +266,7 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
   60%{transform:translateY(0) scaleY(1.12);opacity:1}
   100%{transform:translateY(0) scaleY(1);opacity:1}
 }
-.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 303px}
+.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 240px}
 
 /* gradient arriving in the two trained rows */
 @keyframes tzCharge{
@@ -280,6 +286,8 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-mod text{transition:fill .3s ease}
 .tz-mod.on rect{stroke:var(--navy);fill:#eef4fb}
 .tz-mod.on text{fill:var(--navy)}
+.tz-mod .tz-art{transition:opacity .3s ease;opacity:.75}
+.tz-mod.on .tz-art{opacity:1}
 
 @media (prefers-reduced-motion: reduce){
   .tz-slot.tz-pop{animation:none}
@@ -355,20 +363,21 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-svg{display:block;width:100%;height:auto;overflow:visible}
 .tz-svg text{fill:var(--ink)}
 
-.tz-chips{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tz-chips{display:flex;flex-wrap:nowrap;gap:6px}
 .tz-n{
   display:inline-flex;align-items:center;justify-content:center;
-  width:18px;height:18px;border-radius:50%;flex:none;
+  width:17px;height:17px;border-radius:50%;flex:none;
   background:rgba(0,0,0,.07);color:var(--ink-2);
   font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;
   transition:background .18s ease,color .18s ease;
 }
 .tz-chip.on .tz-n{background:rgba(255,255,255,.22);color:#fff}
 .tz-chip{
-  display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;
-  font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.01em;
+  display:inline-flex;align-items:center;justify-content:flex-start;gap:6px;
+  font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:0;
+  text-transform:none;white-space:nowrap;flex:0 0 auto;
   color:var(--ink-2);background:rgba(255,255,255,.62);border:1px solid rgba(0,0,0,.09);
-  border-radius:999px;padding:6px 12px 6px 7px;cursor:pointer;text-align:left;
+  border-radius:999px;padding:5px 10px 5px 5px;cursor:pointer;text-align:left;
   transition:background .18s ease,color .18s ease,border-color .18s ease;
 }
 .tz-chip:hover{background:#fff;color:var(--ink)}
@@ -376,8 +385,8 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-chip:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 
 .tz-note{
-  font-family:var(--sans);font-size:11.5px;line-height:1.45;color:var(--ink-2);
-  margin:0;min-height:2.6em;
+  font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink-2);
+  margin:2px 0 0;min-height:4.1em;
 }
 .tz-note .tz-t{font-family:var(--mono);font-size:.94em}
 .tz-note .tz-r{color:#1f6b45}
@@ -394,7 +403,7 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
   60%{transform:translateY(0) scaleY(1.12);opacity:1}
   100%{transform:translateY(0) scaleY(1);opacity:1}
 }
-.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 303px}
+.tz-slot.tz-pop{animation:tzPop .62s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:center 240px}
 
 /* gradient arriving in the two trained rows */
 @keyframes tzCharge{
@@ -414,6 +423,8 @@ body{background-color:#fff;color:var(--ink);font-family:"Charter",Georgia,serif}
 .tz-mod text{transition:fill .3s ease}
 .tz-mod.on rect{stroke:var(--navy);fill:#eef4fb}
 .tz-mod.on text{fill:var(--navy)}
+.tz-mod .tz-art{transition:opacity .3s ease;opacity:.75}
+.tz-mod.on .tz-art{opacity:1}
 
 @media (prefers-reduced-motion: reduce){
   .tz-slot.tz-pop{animation:none}
