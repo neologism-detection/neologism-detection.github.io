@@ -107,28 +107,50 @@ tt{background:none;padding:0}
 
 /* ---------- transfer matrix ---------- */
 .matrix-wrap{overflow-x:auto;background:var(--card);border:1.5px solid #dfe6e9;
-  border-radius:10px;padding:18px}
+  border-radius:10px;padding:18px 20px}
 .matrix{
-  border-collapse:separate;border-spacing:4px;margin:0 auto;
+  border-collapse:separate;border-spacing:4px 5px;margin:0 auto;
   font-family:var(--sans);font-size:14px;
 }
-.matrix th{font-weight:700;color:var(--ink);padding:.3em .5em;font-size:13px}
-.matrix th.rowh{text-align:right;white-space:nowrap}
-.matrix th.colh{text-align:center}
-.matrix td{
-  text-align:center;padding:.55em .5em;border-radius:6px;min-width:104px;
-  font-variant-numeric:tabular-nums;line-height:1.25;
+/* the template stripes every other body row; this table encodes its own
+   meaning in the cell fills, so the stripe only adds noise */
+.matrix tbody tr,
+.matrix tbody tr:nth-child(2n+1){background:none}
+
+.matrix th{font-weight:700;color:var(--ink);padding:.2em .4em}
+.matrix th.grp{
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  padding-bottom:.5em;
 }
-.matrix td .v{font-weight:700;font-size:15px;display:block;color:#20303f}
-.matrix td .c{font-size:10.5px;color:#5a6b78;display:block;margin-top:1px}
-.matrix td.diag{outline:2px solid var(--ink);outline-offset:-2px}
-.matrix .corner{border:none;background:none}
+.matrix th.colh{font-size:12px;text-align:center;min-width:52px}
+.matrix th.colh.chk{min-width:34px;color:var(--ink-2)}
+.matrix th.gap,.matrix td.gap{
+  width:20px;min-width:20px;padding:0;background:none;
+  border-left:1px solid var(--rule);
+}
+.matrix thead th.gap{border-left:none}
+
+/* left block: which modalities were in the training mixture */
+.matrix td.chk{
+  text-align:center;padding:.5em .2em;font-size:13px;line-height:1;
+  background:none;
+}
+.matrix td.chk .tick{color:var(--pos);font-weight:700}
+.matrix td.chk .no{color:#cdd3d7}
+
+/* right block: the score, shaded by strength */
+.matrix td.val{
+  text-align:center;padding:.55em .5em;border-radius:5px;
+  font-variant-numeric:tabular-nums;font-weight:700;font-size:14.5px;color:#20303f;
+}
+.matrix td.val.held{box-shadow:inset 0 0 0 2px var(--ink)}
+
 .mlegend{
   display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;
-  margin-top:14px;font-family:var(--sans);font-size:12px;color:var(--ink-2);
+  margin-top:16px;font-family:var(--sans);font-size:12px;color:var(--ink-2);
 }
 .mlegend .sw{display:inline-block;width:26px;height:12px;border-radius:3px;
-  vertical-align:-1px;margin-right:6px}
+  vertical-align:-1px;margin-right:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
 
 /* ---------- verbalization cards ---------- */
 .verb-grid{display:flex;gap:20px;flex-wrap:wrap}
@@ -165,9 +187,9 @@ tt{background:none;padding:0}
   .figure-row{flex-direction:column;gap:20px}
   .figure-card{max-width:100% !important;padding:12px}
   .container.blog p.caption{max-width:100% !important}
-  .matrix td{min-width:74px;padding:.45em .3em}
-  .matrix td .v{font-size:13px}
-  .matrix td .c{font-size:9px}
+  .matrix{font-size:12.5px}
+  .matrix td.val{min-width:42px;padding:.45em .25em;font-size:13px}
+  .matrix th.colh{min-width:42px;font-size:11px}
   .verb-grid{flex-direction:column}
 }
 

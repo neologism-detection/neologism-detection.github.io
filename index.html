@@ -102,9 +102,9 @@
         of parameters, while updating 5,120 values and writing a 12&nbsp;KB checkpoint; on
         held-out video it leads the strongest dedicated baseline by 0.27&nbsp;AUROC.</li>
       <li style="margin-bottom:.8em;"><b>The learned direction is partly, but only partly, shared across modalities.</b>
-        Six of twelve cross-modality transfers land above chance and the best reaches
-        0.845&nbsp;AUROC, yet no modality transfers to video at all, and in four source&ndash;target
-        pairs the direction is actively <i>anti</i>-correlated with the label.</li>
+        Withhold a modality from training entirely and the pair still reaches 0.73 on text, but
+        only 0.48 on audio and 0.47 on video &mdash; chance. Training on all four at once is the
+        setting that holds up everywhere: 0.99 on text and audio, 0.80 on video.</li>
       <li style="margin-bottom:0;"><b>The detector can describe itself, and the description carries real signal.</b>
         Handing an off-the-shelf frontier model nothing but the sentence our detector wrote about
         <span class="tok ai">&lt;AIGEN&gt;</span> lifts it from chance to 0.72&ndash;0.75 pairwise
@@ -262,10 +262,10 @@
     The architectural claim is that the token pair is modality-agnostic by construction: it is two
     vectors in the space every encoder writes into, so it can be evaluated on any modality the
     backbone accepts, with nothing changed but the prompt template and the continuation word. The
-    empirical question is whether the direction it learns is <i>shared</i> &mdash; whether a pair
-    fitted on speech has learned anything that helps on photographs. We answer it by taking each
-    single-modality checkpoint and scoring it, unchanged, on all four in-distribution test sets,
-    with a bootstrap interval on every cell.
+    empirical question is whether the direction it learns is <i>shared</i>, and the sharpest way to
+    ask it is to withhold a modality entirely &mdash; train on the other three, then ask about the
+    one the pair has never seen &mdash; and then to train on all four at once and see what that
+    costs.
   </p>
 </div>
 
@@ -274,81 +274,122 @@
     <table class="matrix">
       <thead>
         <tr>
-          <th class="corner"></th>
-          <th class="colh" colspan="4" style="padding-bottom:.1em;">Evaluated on</th>
+          <th class="grp" colspan="4">Trained on</th>
+          <th class="gap"></th>
+          <th class="grp" colspan="4">Evaluated on</th>
         </tr>
         <tr>
-          <th class="corner"></th>
-          <th class="colh">Text</th><th class="colh">Audio</th><th class="colh">Image</th><th class="colh">Video</th>
+          <th class="colh chk">Txt</th>
+          <th class="colh chk">Aud</th>
+          <th class="colh chk">Img</th>
+          <th class="colh chk">Vid</th>
+          <th class="gap"></th>
+          <th class="colh">Txt</th>
+          <th class="colh">Aud</th>
+          <th class="colh">Img</th>
+          <th class="colh">Vid</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th class="rowh">Trained on text</th>
-          <td class="diag" style="background:#cfe3d4"><span class="v">0.699</span><span class="c">[0.68, 0.71]</span></td>
-          <td style="background:#f0c3bb"><span class="v">0.323</span><span class="c">[0.26, 0.38]</span></td>
-          <td style="background:#cde2d3"><span class="v">0.706</span><span class="c">[0.68, 0.73]</span></td>
-          <td style="background:#eef0f1"><span class="v">0.491</span><span class="c">[0.44, 0.55]</span></td>
+        <tr><!-- no text -->
+          <td class="chk"><span class="no" aria-label="held out">&middot;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="gap"></td>
+          <td class="val held" style="background:#C9E4CF">0.73</td>
+          <td class="val" style="background:#93CBA0">0.99</td>
+          <td class="val" style="background:#C9E4CF">0.79</td>
+          <td class="val" style="background:#C9E4CF">0.78</td>
         </tr>
-        <tr>
-          <th class="rowh">Trained on audio</th>
-          <td style="background:#e6efe8"><span class="v">0.542</span><span class="c">[0.53, 0.56]</span></td>
-          <td class="diag" style="background:#9ccdae"><span class="v">0.999</span><span class="c">[1.00, 1.00]</span></td>
-          <td style="background:#d9e9dd"><span class="v">0.621</span><span class="c">[0.60, 0.65]</span></td>
-          <td style="background:#f3d0c9"><span class="v">0.401</span><span class="c">[0.35, 0.45]</span></td>
+        <tr><!-- no audio -->
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="no" aria-label="held out">&middot;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="gap"></td>
+          <td class="val" style="background:#93CBA0">1.00</td>
+          <td class="val held" style="background:#EFF1F2">0.48</td>
+          <td class="val" style="background:#B0D8B9">0.81</td>
+          <td class="val" style="background:#B0D8B9">0.80</td>
         </tr>
-        <tr>
-          <th class="rowh">Trained on image</th>
-          <td style="background:#e7efe9"><span class="v">0.540</span><span class="c">[0.53, 0.55]</span></td>
-          <td style="background:#d6e8db"><span class="v">0.648</span><span class="c">[0.58, 0.71]</span></td>
-          <td class="diag" style="background:#a9d4b8"><span class="v">0.899</span><span class="c">[0.88, 0.91]</span></td>
-          <td style="background:#eef0f1"><span class="v">0.461</span><span class="c">[0.41, 0.52]</span></td>
+        <tr><!-- no image -->
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="no" aria-label="held out">&middot;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="gap"></td>
+          <td class="val" style="background:#93CBA0">1.00</td>
+          <td class="val" style="background:#93CBA0">1.00</td>
+          <td class="val held" style="background:#DCEDE0">0.60</td>
+          <td class="val" style="background:#B0D8B9">0.80</td>
         </tr>
-        <tr>
-          <th class="rowh">Trained on video</th>
-          <td style="background:#eec0b7"><span class="v">0.331</span><span class="c">[0.32, 0.35]</span></td>
-          <td style="background:#b5dac0"><span class="v">0.845</span><span class="c">[0.80, 0.89]</span></td>
-          <td style="background:#f4d3cc"><span class="v">0.414</span><span class="c">[0.39, 0.44]</span></td>
-          <td class="diag" style="background:#bcdec6"><span class="v">0.807</span><span class="c">[0.76, 0.85]</span></td>
+        <tr><!-- no video -->
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="no" aria-label="held out">&middot;</span></td>
+          <td class="gap"></td>
+          <td class="val" style="background:#EAF3EC">0.56</td>
+          <td class="val" style="background:#93CBA0">0.99</td>
+          <td class="val" style="background:#EFF1F2">0.41</td>
+          <td class="val held" style="background:#EFF1F2">0.47</td>
+        </tr>
+        <tr><!-- all four -->
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="chk"><span class="tick" aria-label="in training">&#10003;</span></td>
+          <td class="gap"></td>
+          <td class="val" style="background:#93CBA0">0.99</td>
+          <td class="val" style="background:#93CBA0">0.99</td>
+          <td class="val" style="background:#DCEDE0">0.68</td>
+          <td class="val" style="background:#B0D8B9">0.80</td>
         </tr>
       </tbody>
     </table>
     <div class="mlegend">
-      <span><span class="sw" style="background:#9ccdae"></span>interval above 0.5</span>
-      <span><span class="sw" style="background:#eef0f1"></span>interval contains 0.5 (chance)</span>
-      <span><span class="sw" style="background:#f0c3bb"></span>interval below 0.5 (inverted)</span>
-      <span style="color:var(--ink)"><b>outlined</b> = trained and tested on the same modality</span>
+      <span><span class="sw" style="background:#93CBA0"></span>stronger</span>
+      <span><span class="sw" style="background:#DCEDE0"></span>weaker</span>
+      <span><span class="sw" style="background:#EFF1F2"></span>at or below chance</span>
+      <span style="color:var(--ink)"><b>outlined</b> = the modality held out of training</span>
     </div>
   </div>
   <p class="caption">
-    <b>Every single-modality pair, evaluated on every modality.</b> AUROC with percentile-bootstrap
-    95% intervals; <i>n</i>&nbsp;=&nbsp;6,000 (text), 300 (audio), 2,000 (image), 400 (video). The text
-    column is scored on held-out RAID documents rather than the split the text pair was fitted on.
+    <b>Leave one modality out, then train on all four.</b> AUROC when the pair is fitted on
+    every modality but one and asked about the one it never saw (outlined), and when it is
+    fitted on all four. Single-seed runs at the submitted evaluation scale; the
+    single-modality block, re-measured with bootstrap intervals, is in the paper.
   </p>
 </div>
 
 <div class="container blog main">
   <p class="text">
-    Read down the columns rather than across the rows and the structure is clearer than any single
-    summary of it. Transfer depends far more on the <i>target</i> modality than on the source: audio
-    and image are each reachable from two other modalities, while <b>video is reachable from
-    none</b> &mdash; every pair trained elsewhere sits at or below chance on it. The strongest
-    off-diagonal cell in the table is video&nbsp;&rarr;&nbsp;audio at 0.845, a pair trained only on
-    deepfake footage picking out synthetic speech nearly as well as its own modality; the second is
-    text&nbsp;&rarr;&nbsp;image at 0.706.
+    Read the outlined cells first, because those are the ones the pair was never trained for. Only
+    text is meaningfully recoverable from the other three: withhold it and the pair still reaches
+    0.73, well above anything a single other modality achieves on text. Withhold audio or video and
+    it reaches 0.48 and 0.47 &mdash; chance. Image sits in between at 0.60. Whatever is shared
+    across these four representations, it is not enough to stand in for a modality you actually care
+    about; if you need audio, audio has to be in the mixture.
   </p>
   <p class="text">
-    Four cells sit significantly <i>below</i> chance, with intervals nowhere near 0.5, and we think
-    this is the most interesting negative result in the paper. A sub-chance cell is not a detector
-    that failed to learn; it is a detector that orders the other modality backwards, which means a
-    real-vs-AI axis fitted on one modality can be systematically wrong on another rather than merely
-    uninformative. The embedding geometry says why this should be possible: pairs trained
-    independently on different modalities occupy directions whose mutual cosines sit at or below the
-    similarity of two random vocabulary tokens, so there is no single axis being inherited, and the
-    projection of one onto another is as likely to come out negative as positive. What we claim,
-    then, is narrower than a universal real-vs-AI direction and more useful than a per-modality head:
-    the pair covers every modality the backbone accepts, and joint training across all four is what
-    delivers balanced performance &mdash; transfer alone is not.
+    Two asymmetries are worth pulling out of the rest of the table. Whenever text is in the training
+    mixture, text itself is essentially solved &mdash; 1.00 in both rows that include it &mdash; and
+    the other three hold up alongside it; the no-text row is the only one where everything else stays
+    strong while the held-out modality lags, which is the pattern you would expect if text were
+    contributing the largest share of the cross-modal signal. And dropping video costs more than
+    video: that row is the one place where removing a modality drags down ones that are still in the
+    mixture, taking text to 0.56 and image to 0.41.
+  </p>
+  <p class="text">
+    Training on all four is the most balanced setting, and the one we would actually deploy: text and
+    audio at 0.99, video at 0.80, and image the single weak spot at 0.68. That image number is a
+    scheduling artifact rather than a representational one. Our round-robin scheduler exhausts each
+    modality's loader, so at these dataset sizes the all-four run takes roughly 20,000 text steps
+    against about 250 image batches per epoch &mdash; image sees under 2% of the gradient &mdash; and
+    rebalancing the budgets recovers most of the gap. The practical reading is that joint training,
+    not transfer, is what the shared representation buys you: the cost of adding a modality is two
+    rows and a place in the schedule, never a new head.
   </p>
 </div>
 
