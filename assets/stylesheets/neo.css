@@ -123,7 +123,7 @@ tt{background:none;padding:0}
   padding-bottom:.5em;
 }
 .matrix th.colh{font-size:12px;text-align:center;min-width:52px}
-.matrix th.colh.chk{min-width:34px;color:var(--ink-2)}
+.matrix th.colh.chk{min-width:46px;color:var(--ink-2)}
 .matrix th.gap,.matrix td.gap{
   width:20px;min-width:20px;padding:0;background:none;
   border-left:1px solid var(--rule);
@@ -194,7 +194,8 @@ tt{background:none;padding:0}
   .container.blog p.caption{max-width:100% !important}
   .matrix{font-size:12.5px}
   .matrix td.val{min-width:42px;padding:.45em .25em;font-size:13px}
-  .matrix th.colh{min-width:42px;font-size:11px}
+  .matrix th.colh{min-width:42px;font-size:10.5px}
+  .matrix th.colh.chk{min-width:38px}
   .verb-grid{flex-direction:column}
 }
 
