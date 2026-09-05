@@ -59,14 +59,14 @@
       note: "We start with a multimodal LLM and keep it frozen. Nothing inside it is trained, " +
             "including the embedding matrix it reads every token from." },
     { key: "expand", chip: "Two new tokens",
-      note: "We add two new words to its vocabulary, <REAL> and <AIGEN>, and give each one a row " +
-            "in that matrix. These two rows are the only things we train." },
+      note: "We add two new tokens (words) to its vocabulary, <REAL> and <AIGEN>, and give each " +
+            "one a row in the vocabulary matrix. These two rows are the only part we train." },
     { key: "train", chip: "Training",
-      note: "Every input is scored twice, once with each word. The loss compares the two scores, " +
-            "and it updates those two rows and nothing else." },
+      note: "Every input is scored twice, once with each token. The loss compares the two scores " +
+            "and updates those two rows." },
     { key: "infer", chip: "Any modality",
-      note: "Because every encoder writes into the same space, the gap between the two rows works " +
-            "as one detector. The same pair reads text, images, audio and video." }
+      note: "Because multimodal LLMs work with various modalities in one shared space, the same " +
+            "architecture works across all of them." }
   ];
 
   function el(name, attrs, parent) {
