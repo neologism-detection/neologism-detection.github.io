@@ -4,8 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
         .nav-container {
             position: fixed;
             z-index: 1000;
+            /* frosted glass: blur what is behind, then a soft drop shadow and a
+               1px inner highlight so the panel keeps an edge on light figures */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        }
+
+        /* The page reset in main_free.css names ul and li directly, which beats
+           inheritance, so every label in the panel has to be named too. */
+        .nav-container,
+        .nav-container .nav-list,
+        .nav-container .nav-item,
+        .nav-container .current-section,
+        .nav-container .nav-list li {
+            font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
         /* Desktop styles */
@@ -60,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: block;
                 flex-grow: 1;
                 font-size: 14px;
-                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -166,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-size: 14px;
                 font-weight: 500;
                 color: #000;
-                font-family: "HelveticaNeue", sans-serif;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
